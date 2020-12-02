@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:atana/Body.dart';
 import 'package:atana/component/button.dart';
+import 'package:atana/service/notification.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,7 +22,7 @@ class _LoginState extends State<Login> {
     // TODO: implement initState
     super.initState();
     isObscured = true;
-    getOneSignal();
+    Notif.getOneSignal();
   }
 
   bool isObscured = true;
@@ -89,7 +90,6 @@ class _LoginState extends State<Login> {
                       print(usernameController.text);
                       print(md5Convert());
                       // loginTest(usernameController.text, md5Convert());
-                      sendAndGetNotification();
                     },
                   ),
                 ],
@@ -101,45 +101,6 @@ class _LoginState extends State<Login> {
     );
   }
 
-  var notificationUrl = "https://onesignal.com/api/v1/notifications";
-  var notificationKey = "YjY1MmY2NTUtY2YwNC00OGRlLThkNTgtZmVkNGE0ODA0NmUz";
-  var customExternalUserId = "teknisi123";
-
-  Future getOneSignal() async {
-    var userId = await OneSignal.shared.setExternalUserId(customExternalUserId);
-    print(userId);
-  }
-
-  Future sendAndGetNotification() async {
-    var dataMap = {"foo": "bar"};
-    String data = jsonEncode(dataMap);
-
-    var contentMap = {"en": "this is new notification"};
-    String content = jsonEncode(contentMap);
-    String appId = "956ae786-10ab-4d63-a9dd-82fb34904881";
-
-    final List userIdsList = ["teknisi123"];
-    final decoded = jsonEncode(userIdsList);
-    final response = await http.post(notificationUrl,
-        headers: {
-          HttpHeaders.contentTypeHeader: "application/json",
-          "Authorization": "BASIC " + notificationKey,
-        },
-        body: jsonEncode({
-          "app_id": "956ae786-10ab-4d63-a9dd-82fb34904881",
-          "include_external_user_ids": userIdsList,
-          "channel_for_external_user_ids": "push",
-          "data": {"foo": "bar"},
-          "headings": {"en": "Halo!"},
-          "contents": {"en": "Ada notifikasi baru nih"}
-        }));
-    if (response.statusCode == 200) {
-      print(response.body);
-    } else {
-      print(response.body);
-      print(externalIds);
-    }
-  }
 
   loginTest(String username, String password) async {
     String baseUrl = 'http://192.168.0.7:4948/api/login/signin';
