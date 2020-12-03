@@ -7,6 +7,7 @@ import 'package:atana/perjalanan_demo.dart';
 import 'package:atana/root.dart';
 import 'package:atana/screen/kepala_gudang.dart';
 import 'package:atana/screen/waiting_page.dart';
+import 'package:atana/service/api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +37,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     checkLoginStatus();
+    API.getEmployee();
   }
 
   checkLoginStatus() async {

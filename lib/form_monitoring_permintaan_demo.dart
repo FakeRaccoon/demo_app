@@ -24,7 +24,6 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
   }
 
   String getDocId;
-  String googleUsername = FirebaseAuth.instance.currentUser.displayName;
 
   @override
   Widget build(BuildContext context) {
@@ -422,7 +421,7 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                                     });
                                                     Database()
                                                         .approve(getDocId,
-                                                            googleUsername)
+                                                            'Admin')
                                                         .whenComplete(() {
                                                       Get.snackbar(
                                                         'Success',
@@ -637,7 +636,7 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                                     });
                                                     Database()
                                                         .approve(getDocId,
-                                                            googleUsername)
+                                                            'Admin')
                                                         .whenComplete(() {
                                                       Get.snackbar(
                                                         'Success',

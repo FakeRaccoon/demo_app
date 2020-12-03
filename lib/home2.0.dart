@@ -9,6 +9,7 @@ import 'package:atana/root.dart';
 import 'package:atana/screen/kasir.dart';
 import 'package:atana/screen/kepala_gudang.dart';
 import 'package:atana/screen/teknisi.dart';
+import 'package:atana/service/api.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -30,7 +31,7 @@ class _Home2State extends State<Home2> {
   bool peminjamanBarangGudang = false;
   bool cashierPage = false;
   bool technicianPage = false;
-  String _userStatus;
+  String userRole;
   String userToken;
   String _userName;
 
@@ -51,6 +52,7 @@ class _Home2State extends State<Home2> {
     } else {
       setState(() {
         _userName = sharedPreferences.getString('username');
+        userRole = sharedPreferences.getString('role');
       });
       roleCheck();
     }
@@ -63,8 +65,7 @@ class _Home2State extends State<Home2> {
         elevation: 0,
         backgroundColor: Colors.transparent,
       ),
-      body: Container(
-        alignment: Alignment.center,
+      body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -80,7 +81,7 @@ class _Home2State extends State<Home2> {
                           style: GoogleFonts.openSans(fontSize: 22)),
                     ],
                   ),
-                  Text('Admin', style: GoogleFonts.openSans(fontSize: 14)),
+                  Text(sharedPreferences?.getString('role') ?? '', style: GoogleFonts.openSans(fontSize: 14)),
                 ],
               ),
             ),
@@ -140,8 +141,7 @@ class _Home2State extends State<Home2> {
   }
 
   roleCheck() async {
-    print('your token is $userToken');
-    if (_userName == 'ABC') {
+    if (userRole == 'Admin') {
       setState(() {
         pengajuanDemo = true;
         permintaanDemo = true;
@@ -153,7 +153,7 @@ class _Home2State extends State<Home2> {
         technicianPage = true;
       });
     }
-    if (_userStatus == 'Sales') {
+    if (userRole == 'Sales') {
       pengajuanDemo = true;
       permintaanDemo = false;
       penugasanDemo = false;

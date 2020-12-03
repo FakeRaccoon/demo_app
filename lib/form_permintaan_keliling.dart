@@ -1,12 +1,10 @@
 import 'package:atana/component/button.dart';
 import 'package:atana/component/customTFsmall.dart';
 import 'package:atana/model/post_result.dart';
-import 'package:atana/screen/cari_barang.dart';
 import 'package:atana/service/api.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -72,15 +70,19 @@ class _PermintaanKelilingState extends State<PermintaanKeliling> {
 
     // ReqResPost.reqResPost();
 
-    API.getItems().then((value) {
+    API.getItems2('bromo').then((value) {
       item = value;
       filteredItem = item;
-    });
-
-    API.getProvinceResult().whenComplete(() {
+    }).whenComplete((){
       setState(() {
         isLoading = false;
       });
+    });
+
+    API.getProvinceResult().whenComplete(() {
+      // setState(() {
+      //   isLoading = false;
+      // });
     }).then((itemFromApi) {
       setState(() {
         province = itemFromApi;
@@ -703,6 +705,7 @@ class _PermintaanKelilingState extends State<PermintaanKeliling> {
   List<ItemResult> filteredItem = List();
   bool itemLoading = true;
   String itemId;
+  int filterCount;
 
   Widget itemBottomSheet() {
     return StatefulBuilder(
@@ -743,18 +746,25 @@ class _PermintaanKelilingState extends State<PermintaanKeliling> {
                     hintText: 'Cari barang',
                     prefixIcon: Icon(Icons.search),
                     readOnly: false,
-                    onchange: (filter) {
-                      setModalState(() {
-                        filteredItem = item
-                            .where((u) => (u.name.toLowerCase().contains(filter.toLowerCase())))
-                            .toList();
-                      });
+                    onchange: (String filter) {
+                      print(filter.length);
+                      if (filter.length >= 2) {
+                        setModalState(() {
+                          API.getItems2(filter.toString().toLowerCase()).then((value) {
+                            item = value;
+                            filteredItem = item;
+                          });
+                          // filteredItem = item
+                          //     .where((u) => (u.name.toLowerCase().contains(filter.toLowerCase())))
+                          //     .toList();
+                        });
+                      }
                     },
                   ),
                   Expanded(
                     child: Center(
-                      child: isLoading
-                          ? Center(child: CircularProgressIndicator())
+                      child: filteredItem.length == 0
+                          ? Center(child: Text('Item tidak ditemukan'))
                           : ListView.separated(
                               itemCount: filteredItem.length,
                               itemBuilder: (context, index) {
@@ -762,7 +772,13 @@ class _PermintaanKelilingState extends State<PermintaanKeliling> {
                                   onTap: () {
                                     setState(() {
                                       itemResultController.text = filteredItem[index].name;
-                                      itemId = filteredItem[index].id;
+                                      itemId = filteredItem[index].id.toString();
+                                      if(filteredItem[index].name == "400 bad request"){
+                                        itemResultController.clear();
+                                      }
+                                      if(filteredItem[index].name == "404 not found"){
+                                        itemResultController.clear();
+                                      }
                                       print(itemId);
                                     });
                                     Navigator.pop(context);

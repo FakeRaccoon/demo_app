@@ -1,8 +1,5 @@
 import 'package:atana/component/cusomTF.dart';
-import 'package:atana/home.dart';
-import 'package:atana/home2.0.dart';
 import 'package:atana/model/transport_model.dart';
-import 'package:atana/perjalanan_demo.dart';
 import 'package:atana/screen/pilih_teknisi.dart';
 import 'package:atana/service/api.dart';
 import 'package:atana/service/database.dart';
@@ -10,10 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:dio/dio.dart';
 import 'package:dropdown_search/dropdown_search.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
@@ -34,8 +29,6 @@ class _MonitoringPenugasaState extends State<MonitoringPenugasa> {
                   docId: getDocId,
                 )));
   }
-
-  String userName = FirebaseAuth.instance.currentUser.displayName;
 
   @override
   Widget build(BuildContext context) {
@@ -93,37 +86,24 @@ class _MonitoringPenugasaState extends State<MonitoringPenugasa> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Container(
-                                      child: Text(
-                                          snapshot.data.docs[index]
-                                              ?.data()['barang'],
+                                      child: Text(snapshot.data.docs[index]?.data()['barang'],
                                           style: GoogleFonts.openSans(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18)),
-                                      width: MediaQuery.of(context).size.width *
-                                          .60,
+                                              fontWeight: FontWeight.bold, fontSize: 18)),
+                                      width: MediaQuery.of(context).size.width * .60,
                                     ),
                                     Row(
                                       children: [
+                                        Text(snapshot.data.docs[index].data()['city'],
+                                            style: GoogleFonts.openSans(fontSize: 16)),
                                         Text(
-                                            snapshot.data.docs[index]
-                                                .data()['city'],
-                                            style: GoogleFonts.openSans(
-                                                fontSize: 16)),
-                                        Text(
-                                            snapshot.data.docs[index]
-                                                        .data()['district'] ==
-                                                    null
+                                            snapshot.data.docs[index].data()['district'] == null
                                                 ? ''
                                                 : ', ${snapshot.data.docs[index].data()['district']}',
-                                            style: GoogleFonts.openSans(
-                                                fontSize: 16)),
+                                            style: GoogleFonts.openSans(fontSize: 16)),
                                       ],
                                     ),
-                                    Text(
-                                        snapshot.data.docs[index]
-                                            ?.data()['tanggal_perkiraan'],
-                                        style:
-                                            GoogleFonts.openSans(fontSize: 16)),
+                                    Text(snapshot.data.docs[index]?.data()['tanggal_perkiraan'],
+                                        style: GoogleFonts.openSans(fontSize: 16)),
                                   ],
                                 ),
                               ],
@@ -150,15 +130,10 @@ class DetailPagePenugasanDemo extends StatefulWidget {
   final List selectedTech;
 
   const DetailPagePenugasanDemo(
-      {Key key,
-      this.post,
-      this.docId,
-      this.selectedTechCount,
-      this.selectedTech})
+      {Key key, this.post, this.docId, this.selectedTechCount, this.selectedTech})
       : super(key: key);
   @override
-  _DetailPagePenugasanDemoState createState() =>
-      _DetailPagePenugasanDemoState();
+  _DetailPagePenugasanDemoState createState() => _DetailPagePenugasanDemoState();
 }
 
 class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
@@ -172,10 +147,8 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
                 )));
   }
 
-  final TextEditingController tanggalBerangkatContoller =
-      TextEditingController();
-  final TextEditingController tanggalKembaliController =
-      TextEditingController();
+  final TextEditingController tanggalBerangkatContoller = TextEditingController();
+  final TextEditingController tanggalKembaliController = TextEditingController();
   DateTime tanggalBerangkat;
   DateTime tanggalKembali;
 
@@ -189,8 +162,7 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
     if (_pickedDate != null) {
       setState(() {
         tanggalBerangkat = _pickedDate;
-        tanggalBerangkatContoller.text =
-            DateFormat('d MMM y').format(tanggalBerangkat);
+        tanggalBerangkatContoller.text = DateFormat('d MMM y').format(tanggalBerangkat);
         returnDate = tanggalKembaliController.text;
       });
     }
@@ -206,8 +178,7 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
     if (_pickedDate != null) {
       setState(() {
         tanggalKembali = _pickedDate;
-        tanggalKembaliController.text =
-            DateFormat('d MMM y').format(tanggalKembali);
+        tanggalKembaliController.text = DateFormat('d MMM y').format(tanggalKembali);
       });
     }
   }
@@ -228,11 +199,11 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
   bool isSwitched = false;
   String returnDate;
   String transportResult;
-  String feeResult;
+  var feeResult;
   String driverResult;
 
   TextEditingController feeController = TextEditingController();
-
+  var currency = NumberFormat.decimalPattern();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -250,8 +221,7 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
             Padding(
               padding: const EdgeInsets.all(10),
               child: Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 elevation: 4,
                 child: Padding(
                   padding: const EdgeInsets.all(20),
@@ -260,8 +230,7 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
                     children: [
                       Text(
                         'Isi data penugasan demo',
-                        style: GoogleFonts.openSans(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.openSans(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 20),
                       CustomTextField(
@@ -310,8 +279,7 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
                         readOnly: true,
                         hintText: widget.selectedTechCount == null
                             ? 'Teknisi'
-                            : widget.selectedTechCount.toString() +
-                                ' Teknisi ditugaskan',
+                            : widget.selectedTechCount.toString() + ' Teknisi ditugaskan',
                       ),
                       SizedBox(height: 20),
                       Row(
@@ -336,18 +304,15 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
                                 DropdownSearch(
                                   dropdownSearchDecoration: InputDecoration(
                                       border: InputBorder.none,
-                                      contentPadding: EdgeInsets.only(
-                                          left: 15, right: 10)),
+                                      contentPadding: EdgeInsets.only(left: 15, right: 10)),
                                   mode: Mode.BOTTOM_SHEET,
                                   hint: 'Sopir',
                                   onFind: (String filter) async {
-                                    var response = await Dio().get(
-                                        baseDemoUrl + 'transport',
-                                        queryParameters: {
-                                          'Accept': 'application/Json',
-                                        });
-                                    var models = TransportModel.fromJsonList(
-                                        response.data);
+                                    var response = await Dio()
+                                        .get(baseDemoUrl + 'transport', queryParameters: {
+                                      'Accept': 'application/Json',
+                                    });
+                                    var models = TransportModel.fromJsonList(response.data);
                                     return models;
                                   },
                                   onChanged: (TransportModel data) {
@@ -364,13 +329,11 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
                       DropdownSearch(
                         dropdownSearchDecoration: InputDecoration(
                             border: InputBorder.none,
-                            contentPadding:
-                                EdgeInsets.only(left: 15, right: 10)),
+                            contentPadding: EdgeInsets.only(left: 15, right: 10)),
                         mode: Mode.BOTTOM_SHEET,
                         hint: 'Kendaraan',
                         onFind: (String filter) async {
-                          var response = await Dio().get(
-                              baseDemoUrl + 'transport',
+                          var response = await Dio().get(baseDemoUrl + 'transport',
                               options: Options(headers: {
                                 'username': 'amt',
                                 'password': 'kedungdoro',
@@ -379,8 +342,7 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
                               queryParameters: {
                                 'Accept': 'application/Json',
                               });
-                          var models = TransportModel.fromJsonList(
-                              response.data['result']);
+                          var models = TransportModel.fromJsonList(response.data['result']);
                           return models;
                         },
                         onChanged: (TransportModel data) {
@@ -421,12 +383,10 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
                         ],
                         controller: feeController,
                         keyboardtype: TextInputType.number,
-                        prefix:
-                            feeController.text.length > 0 ? Text('Rp ') : null,
+                        prefix: feeController.text.length > 0 ? Text('Rp ') : null,
                         hintText: 'Estimasi Biaya',
                         onchange: (value) {
                           setState(() {
-                            feeResult = value;
                             print(value);
                           });
                         },
@@ -457,17 +417,14 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: Colors.blue),
+                              borderRadius: BorderRadius.circular(8), color: Colors.blue),
                           height: 40,
                           width: double.infinity,
                           child: Center(
                             child: Text(
                               'Ajukan',
                               style: GoogleFonts.openSans(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14),
+                                  color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14),
                             ),
                           ),
                         ),

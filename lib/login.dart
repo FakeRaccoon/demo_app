@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:atana/Body.dart';
 import 'package:atana/component/button.dart';
@@ -7,7 +6,6 @@ import 'package:atana/service/notification.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 
@@ -37,62 +35,65 @@ class _LoginState extends State<Login> {
 
   String externalIds;
 
+
+
   @override
   Widget build(BuildContext context) {
     String md5Convert() {
       return md5.convert(utf8.encode(passController.text)).toString();
     }
-
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            margin: EdgeInsets.all(20),
-            elevation: 4,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  Text(
-                    'Login',
-                    style: GoogleFonts.openSans(fontWeight: FontWeight.bold, fontSize: 22),
-                  ),
-                  SizedBox(height: 20),
-                  TextFormField(
-                    controller: usernameController,
-                    textAlignVertical: TextAlignVertical.center,
-                    decoration: InputDecoration(
-                      hintText: 'Username',
-                      prefixIcon: Icon(Icons.person),
+        child: Form(
+          child: SingleChildScrollView(
+            child: Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              margin: EdgeInsets.all(20),
+              elevation: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Text(
+                      'Login',
+                      style: GoogleFonts.openSans(fontWeight: FontWeight.bold, fontSize: 22),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  TextFormField(
-                    obscureText: isObscured,
-                    controller: passController,
-                    textAlignVertical: TextAlignVertical.center,
-                    decoration: InputDecoration(
-                        hintText: 'Password',
-                        prefixIcon: Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          onPressed: _toggle,
-                          icon: isObscured == false
-                              ? Icon(Icons.visibility)
-                              : Icon(Icons.visibility_off),
-                        )),
-                  ),
-                  SizedBox(height: 20),
-                  CustomButton(
-                    title: 'Login',
-                    color: Colors.blue,
-                    ontap: () {
-                      print(usernameController.text);
-                      print(md5Convert());
-                      // loginTest(usernameController.text, md5Convert());
-                    },
-                  ),
-                ],
+                    SizedBox(height: 20),
+                    TextFormField(
+                      controller: usernameController,
+                      textAlignVertical: TextAlignVertical.center,
+                      decoration: InputDecoration(
+                        hintText: 'Username',
+                        prefixIcon: Icon(Icons.person),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      obscureText: isObscured,
+                      controller: passController,
+                      textAlignVertical: TextAlignVertical.center,
+                      decoration: InputDecoration(
+                          hintText: 'Password',
+                          prefixIcon: Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            onPressed: _toggle,
+                            icon: isObscured == false
+                                ? Icon(Icons.visibility)
+                                : Icon(Icons.visibility_off),
+                          )),
+                    ),
+                    SizedBox(height: 20),
+                    CustomButton(
+                      title: 'Login',
+                      color: Colors.blue,
+                      ontap: () {
+                        print(usernameController.text);
+                        print(md5Convert());
+                        loginTest(usernameController.text, md5Convert());
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -138,5 +139,6 @@ class _LoginState extends State<Login> {
 
     prefs.setString('username', _username);
     prefs.setString('token', _token);
+    prefs.setString('role', 'Admin');
   }
 }

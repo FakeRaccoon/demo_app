@@ -51,7 +51,7 @@ class DistrictResult {
 
 class ItemResult {
   final String name;
-  final String id;
+  final double id;
 
   ItemResult({
     this.id,
@@ -60,8 +60,76 @@ class ItemResult {
 
   factory ItemResult.fromJson(Map<String, dynamic> json) {
     return new ItemResult(
-      id: json['atanaItemId'],
-      name: json['atanaName'],
+      id: json['itemId'],
+      name: json['itemName'],
+    );
+  }
+}
+
+class AccountKasResult {
+  final String name;
+  final double id;
+
+  AccountKasResult({
+    this.id,
+    this.name,
+  });
+
+  factory AccountKasResult.fromJson(Map<String, dynamic> json) {
+    return new AccountKasResult(
+      id: json['coaId'],
+      name: json['coaName'],
+    );
+  }
+}
+
+class AccountFeeResult {
+  final String name;
+  final double id;
+
+  AccountFeeResult({
+    this.id,
+    this.name,
+  });
+
+  factory AccountFeeResult.fromJson(Map<String, dynamic> json) {
+    return new AccountFeeResult(
+      id: json['coaId'],
+      name: json['coaName'],
+    );
+  }
+}
+
+class WarehouseResult {
+  final String name;
+  final double id;
+
+  WarehouseResult({
+    this.id,
+    this.name,
+  });
+
+  factory WarehouseResult.fromJson(Map<String, dynamic> json) {
+    return new WarehouseResult(
+      id: json['warehouseId'],
+      name: json['warehouseName'],
+    );
+  }
+}
+
+class EmployeeResult {
+  final String name;
+  final double id;
+
+  EmployeeResult({
+    this.id,
+    this.name,
+  });
+
+  factory EmployeeResult.fromJson(Map<String, dynamic> json) {
+    return new EmployeeResult(
+      id: json['employeeId'],
+      name: json['employeeName'],
     );
   }
 }

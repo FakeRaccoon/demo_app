@@ -1,5 +1,6 @@
 import 'package:atana/component/button.dart';
 import 'package:atana/form_monitoring_pengasan_demo.dart';
+import 'package:atana/model/result.dart';
 import 'package:atana/model/teknisi_model.dart';
 import 'package:atana/perjalanan_demo.dart';
 import 'package:atana/service/api.dart';
@@ -10,6 +11,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class PilihTeknisi extends StatefulWidget {
   final String docId;
@@ -21,7 +23,7 @@ class PilihTeknisi extends StatefulWidget {
   _PilihTeknisiState createState() => _PilihTeknisiState();
 }
 
-class _PilihTeknisiState extends State<PilihTeknisi> with AutomaticKeepAliveClientMixin {
+class _PilihTeknisiState extends State<PilihTeknisi> {
   TextEditingController searchController = TextEditingController();
 
   String searchResult;
@@ -32,8 +34,8 @@ class _PilihTeknisiState extends State<PilihTeknisi> with AutomaticKeepAliveClie
   var mycolor = Colors.white;
 
   // List<Item> item = List();
-  List<Teknisi> filteredItem = List();
-  List<Teknisi> item = List();
+  List<EmployeeResult> filteredItem = List();
+  List<EmployeeResult> item = List();
   List<bool> listCheck = [];
   List<String> selectedTech = [];
 
@@ -44,32 +46,38 @@ class _PilihTeknisiState extends State<PilihTeknisi> with AutomaticKeepAliveClie
     setState(() {
       isLoading = true;
     });
-    // API.getTeknisi().whenComplete(() {
-    //   setState(() {
-    //     isLoading = false;
-    //   });
-    // }).then((itemFromApi) {
-    //   setState(() {
-    //     item = itemFromApi;
-    //     filteredItem = item;
-    //   });
-    // });
-    // print(widget.docId);
+    API.getEmployee().then((value) {
+      setState(() {
+        item = value;
+        filteredItem = item;
+      });
+    }).whenComplete(() {
+      isLoading = false;
+    });
+    print(widget.docId);
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showBottomSheet();
-          // Get.bottomSheet(technicianList());
+          showMaterialModalBottomSheet(
+            backgroundColor: Colors.transparent,
+            context: context,
+            // expand: true,
+            isDismissible: false,
+            enableDrag: true,
+            builder: (BuildContext context) {
+              return technicianListBottomSheet();
+            },
+          );
         },
-        child: Badge(
-          badgeContent: Text(selectedTech.length.toString()),
-          badgeColor: Colors.blue,
-        ),
+        child: Icon(Icons.person),
+        // child: Badge(
+        //   badgeContent: Text(selectedTech.length.toString()),
+        //   badgeColor: Colors.blue,
+        // ),
       ),
       body: SafeArea(
         child: Padding(
@@ -79,27 +87,29 @@ class _PilihTeknisiState extends State<PilihTeknisi> with AutomaticKeepAliveClie
             children: [
               Row(
                 children: [
-                  InkWell(
-                      onTap: () {
-                        selectedTech.clear();
-                        navigateToDetail(selectedTech.length.toString(), selectedTech, widget.post);
-                      },
-                      child: Icon(Icons.arrow_back)),
+                  // selectedTech.clear();
+                  //   navigateToDetail(selectedTech.length.toString(), selectedTech, widget.post);
+                  IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () => Navigator.pop(context),
+                  ),
                   Expanded(
                     child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.grey[200]),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10), color: Colors.grey[200]),
                       child: TextField(
                         textAlignVertical: TextAlignVertical.center,
                         onChanged: (string) {
                           setState(() {
-                            filteredItem =
-                                item.where((u) => (u.name.toLowerCase().contains(string.toLowerCase()))).toList();
+                            filteredItem = item
+                                .where((u) => (u.name.toLowerCase().contains(string.toLowerCase())))
+                                .toList();
                           });
                         },
                         controller: searchController,
-                        autofocus: false,
-                        decoration: InputDecoration(border: InputBorder.none, prefixIcon: Icon(Icons.search)),
+                        decoration: InputDecoration(
+                            border: InputBorder.none, prefixIcon: Icon(Icons.search)),
                       ),
                     ),
                   ),
@@ -108,30 +118,36 @@ class _PilihTeknisiState extends State<PilihTeknisi> with AutomaticKeepAliveClie
                 ],
               ),
               SizedBox(height: 10),
-              Expanded(
-                child: filteredItem.length == 0
-                    ? Center(child: Text('Item tidak ditemukan'))
-                    : ListView.builder(
-                        physics: BouncingScrollPhysics(),
-                        itemCount: filteredItem.length,
-                        itemBuilder: (context, index) {
-                          return InkWell(
-                            onTap: () {
-                              setState(() {
-                                selectedTech.add(filteredItem[index].name);
-                              });
-                            },
-                            child: Card(
-                              color: mycolor,
-                              child: ListTile(
-                                  selected: isSelected,
-                                  title: Text(filteredItem[index].name),
-                                  subtitle: Text(filteredItem[index].role),
-                                  trailing: Icon(Icons.add)),
+              isLoading == true
+                  ? Center(child: LinearProgressIndicator())
+                  : Expanded(
+                      child: filteredItem.length == 0
+                          ? Center(child: Text('Item tidak ditemukan'))
+                          : ListView.separated(
+                              physics: BouncingScrollPhysics(),
+                              itemCount: filteredItem.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedTech.add(filteredItem[index].name);
+                                        final snackBar = SnackBar(
+                                          content:
+                                              Text('Berhasil memilih ' + filteredItem[index].name),
+                                          duration: Duration(seconds: 2),
+                                        );
+                                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                      });
+                                    },
+                                    selected: isSelected,
+                                    title: Text(filteredItem[index].name),
+                                    trailing: Icon(Icons.add));
+                              },
+                              separatorBuilder: (BuildContext context, int index) {
+                                return Divider();
+                              },
                             ),
-                          );
-                        }),
-              ),
+                    ),
             ],
           ),
         ),
@@ -210,7 +226,8 @@ class _PilihTeknisiState extends State<PilihTeknisi> with AutomaticKeepAliveClie
                             onPressed: () {},
                           ),
                           Text('Selected technician',
-                              style: GoogleFonts.openSans(fontSize: 18, fontWeight: FontWeight.bold)),
+                              style:
+                                  GoogleFonts.openSans(fontSize: 18, fontWeight: FontWeight.bold)),
                           Spacer(),
                           InkWell(
                             onTap: () {
@@ -235,13 +252,7 @@ class _PilihTeknisiState extends State<PilihTeknisi> with AutomaticKeepAliveClie
                                   children: [
                                     Text(selectedTech[index]),
                                     Spacer(),
-                                    IconButton(
-                                        icon: Icon(Icons.clear),
-                                        onPressed: () {
-                                          setModalState(() {
-                                            selectedTech.remove(selectedTech[index]);
-                                          });
-                                        }),
+                                    IconButton(icon: Icon(Icons.clear), onPressed: () {}),
                                   ],
                                 ),
                               );
@@ -250,7 +261,8 @@ class _PilihTeknisiState extends State<PilihTeknisi> with AutomaticKeepAliveClie
                       CustomButton(
                         ontap: () {
                           print(selectedTech);
-                          navigateToDetail(selectedTech.length.toString(), selectedTech, widget.post);
+                          navigateToDetail(
+                              selectedTech.length.toString(), selectedTech, widget.post);
                           // Database().addTechnician(selectedTech, widget.docId);
                         },
                         color: Colors.blue,
@@ -277,7 +289,72 @@ class _PilihTeknisiState extends State<PilihTeknisi> with AutomaticKeepAliveClie
                 )));
   }
 
-  @override
-  // TODO: implement wantKeepAlive
-  bool get wantKeepAlive => true;
+  Widget technicianListBottomSheet() {
+    return StatefulBuilder(
+      builder: (BuildContext context, StateSetter setModalState) {
+        return SafeArea(
+          child: Container(
+            height: MediaQuery.of(context).size.height * .50,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+              ),
+              color: Colors.white,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      Text(
+                        'List teknisi',
+                        style: GoogleFonts.openSans(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: ListView.separated(
+                        itemCount: selectedTech.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return ListTile(
+                            title: Text(selectedTech[index]),
+                            trailing: IconButton(
+                              icon: Icon(Icons.delete_outline_rounded),
+                              onPressed: () {
+                                setModalState(() {
+                                  selectedTech.remove(selectedTech[index]);
+                                  print(selectedTech);
+                                });
+                              },
+                            ),
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return Divider();
+                        },
+                      ),
+                    ),
+                  ),
+                  CustomButton(
+                    color: Colors.blue,
+                    title: 'Konfirmasi',
+                    ontap: () {
+                      navigateToDetail(selectedTech.length.toString(), selectedTech, widget.post);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
