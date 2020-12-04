@@ -163,4 +163,5 @@ class _Home2State extends State<Home2> {
       cashierPage = false;
       technicianPage = false;
     }
+  }
 }
