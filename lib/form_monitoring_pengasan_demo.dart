@@ -199,7 +199,7 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
   bool isSwitched = false;
   String returnDate;
   String transportResult;
-  var feeResult;
+  String feeResult;
   String driverResult;
 
   TextEditingController feeController = TextEditingController();
@@ -387,7 +387,10 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
                         hintText: 'Estimasi Biaya',
                         onchange: (value) {
                           setState(() {
-                            print(value);
+                            feeResult = value;
+                            var stringToInt = double.parse(feeResult);
+                            var f = new NumberFormat("###");
+                            print(f.format(feeResult));
                           });
                         },
                       ),

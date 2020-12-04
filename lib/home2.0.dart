@@ -163,47 +163,4 @@ class _Home2State extends State<Home2> {
       cashierPage = false;
       technicianPage = false;
     }
-  }
-
-  // _getProfileData() async {
-  //   final uid = FirebaseAuth.instance.currentUser.uid;
-  //   await FirebaseFirestore.instance
-  //       .collection('Users')
-  //       .doc(uid)
-  //       .get()
-  //       .then((result) => {
-  //             user.status = result.data()['status'],
-  //             user.name = result.data()['name'],
-  //           });
-  // }
-
-  // Widget adminFeature() {
-  //   if (_userStatus == 'Manager Marketing') {
-  //     return formMonitoring();
-  //   } else if (_userStatus == 'Sales') {
-  //     return formPermintaan();
-  //   } else if (_userStatus == 'Direktur') {
-  //     return formMonitoring();
-  //   } else if (_userStatus == 'Manager Service') {
-  //     return formPenugasan();
-  //   } else if (_userStatus == '') {
-  //     return formWaiting();
-  //   }
-  // }
-  //
-  // Widget formPenugasan() {
-  //   return MonitoringPenugasa();
-  // }
-  //
-  // Widget formPermintaan() {
-  //   return PermintaanKeliling();
-  // }
-  //
-  // Widget formMonitoring() {
-  //   return MonitoringDemo();
-  // }
-  //
-  // Widget formWaiting() {
-  //   return WaitingPage();
-  // }
 }
