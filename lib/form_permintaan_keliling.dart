@@ -2,6 +2,7 @@ import 'package:atana/component/button.dart';
 import 'package:atana/component/customTFsmall.dart';
 import 'package:atana/model/post_result.dart';
 import 'package:atana/service/api.dart';
+import 'package:atana/service/notification.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
@@ -73,7 +74,7 @@ class _PermintaanKelilingState extends State<PermintaanKeliling> {
     API.getItems2('bromo').then((value) {
       item = value;
       filteredItem = item;
-    }).whenComplete((){
+    }).whenComplete(() {
       setState(() {
         isLoading = false;
       });
@@ -360,34 +361,35 @@ class _PermintaanKelilingState extends State<PermintaanKeliling> {
                                 color: Colors.blue,
                                 title: 'Ajukan',
                                 ontap: () {
-                                  if (_formKey.currentState.validate()) {
-                                    PostResult.postApi(
-                                      provinceId,
-                                      cityId,
-                                      districtId,
-                                      itemId,
-                                      estimatedDate,
-                                      demoTypeId,
-                                    ).whenComplete(() {
-                                      Get.snackbar('Success', 'Data berhasil di ajukan',
-                                          snackPosition: SnackPosition.BOTTOM,
-                                          margin: EdgeInsets.all(20),
-                                          backgroundColor: Colors.grey[900],
-                                          colorText: Colors.white);
-                                    }).then((value) {
-                                      setState(() {
-                                        provinceResultController.clear();
-                                        cityResultController.clear();
-                                        districtResultController.clear();
-                                        estimatedDateController.clear();
-                                        itemResultController.clear();
-                                        itemResultController.clear();
-                                        isCityVisible = false;
-                                        isDistrictVisible = false;
-                                      });
-                                    });
-                                  }
-                                  return null;
+                                  Notif.sendAndGetNotification(
+                                      'Ada permintaan demo baru nih', ['teknisi']);
+                                  // if (_formKey.currentState.validate()) {
+                                  //   PostResult.postApi(
+                                  //     provinceId,
+                                  //     cityId,
+                                  //     districtId,
+                                  //     itemId,
+                                  //     estimatedDate,
+                                  //     demoTypeId,
+                                  //   ).whenComplete(() {
+                                  //     Get.snackbar('Success', 'Data berhasil di ajukan',
+                                  //         snackPosition: SnackPosition.BOTTOM,
+                                  //         margin: EdgeInsets.all(20),
+                                  //         backgroundColor: Colors.grey[900],
+                                  //         colorText: Colors.white);
+                                  //   }).then((value) {
+                                  //     setState(() {
+                                  //       provinceResultController.clear();
+                                  //       cityResultController.clear();
+                                  //       districtResultController.clear();
+                                  //       estimatedDateController.clear();
+                                  //       itemResultController.clear();
+                                  //       itemResultController.clear();
+                                  //       isCityVisible = false;
+                                  //       isDistrictVisible = false;
+                                  //     });
+                                  //   });
+                                  // }
                                 },
                               ),
                             ],
@@ -754,10 +756,10 @@ class _PermintaanKelilingState extends State<PermintaanKeliling> {
                             item = value;
                             filteredItem = item;
                           });
-                          // filteredItem = item
-                          //     .where((u) => (u.name.toLowerCase().contains(filter.toLowerCase())))
-                          //     .toList();
                         });
+                        // filteredItem = item
+                        //     .where((u) => (u.name.toLowerCase().contains(filter.toLowerCase())))
+                        //     .toList();
                       }
                     },
                   ),
@@ -773,10 +775,10 @@ class _PermintaanKelilingState extends State<PermintaanKeliling> {
                                     setState(() {
                                       itemResultController.text = filteredItem[index].name;
                                       itemId = filteredItem[index].id.toString();
-                                      if(filteredItem[index].name == "400 bad request"){
+                                      if (filteredItem[index].name == "400 bad request") {
                                         itemResultController.clear();
                                       }
-                                      if(filteredItem[index].name == "404 not found"){
+                                      if (filteredItem[index].name == "404 not found") {
                                         itemResultController.clear();
                                       }
                                       print(itemId);

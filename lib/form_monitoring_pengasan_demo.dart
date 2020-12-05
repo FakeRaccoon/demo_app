@@ -1,3 +1,4 @@
+import 'package:atana/Body.dart';
 import 'package:atana/component/cusomTF.dart';
 import 'package:atana/model/transport_model.dart';
 import 'package:atana/screen/pilih_teknisi.dart';
@@ -9,6 +10,7 @@ import 'package:dio/dio.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
@@ -31,6 +33,12 @@ class _MonitoringPenugasaState extends State<MonitoringPenugasa> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -38,7 +46,7 @@ class _MonitoringPenugasaState extends State<MonitoringPenugasa> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Get.offAll(Body());
           },
         ),
       ),
@@ -136,7 +144,8 @@ class DetailPagePenugasanDemo extends StatefulWidget {
   _DetailPagePenugasanDemoState createState() => _DetailPagePenugasanDemoState();
 }
 
-class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
+class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo>
+    with AutomaticKeepAliveClientMixin {
   navigateToDetail(String docID, DocumentSnapshot post) {
     Navigator.push(
         context,
@@ -162,7 +171,7 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
     if (_pickedDate != null) {
       setState(() {
         tanggalBerangkat = _pickedDate;
-        tanggalBerangkatContoller.text = DateFormat('d MMM y').format(tanggalBerangkat);
+        tanggalBerangkatContoller.text = DateFormat('d MMMM y').format(tanggalBerangkat);
         returnDate = tanggalKembaliController.text;
       });
     }
@@ -178,7 +187,7 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
     if (_pickedDate != null) {
       setState(() {
         tanggalKembali = _pickedDate;
-        tanggalKembaliController.text = DateFormat('d MMM y').format(tanggalKembali);
+        tanggalKembaliController.text = DateFormat('d MMMM y').format(tanggalKembali);
       });
     }
   }
@@ -206,12 +215,13 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
   var currency = NumberFormat.decimalPattern();
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Get.off(MonitoringPenugasa());
           },
         ),
       ),
@@ -378,9 +388,7 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
                       SizedBox(height: 20),
                       CustomTextField(
                         readOnly: false,
-                        inputformat: [
-                          CurrencyTextInputFormatter(decimalDigits: 0)
-                        ],
+                        inputformat: [CurrencyTextInputFormatter(decimalDigits: 0)],
                         controller: feeController,
                         keyboardtype: TextInputType.number,
                         prefix: feeController.text.length > 0 ? Text('Rp ') : null,
@@ -388,9 +396,9 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
                         onchange: (value) {
                           setState(() {
                             feeResult = value;
-                            var stringToInt = double.parse(feeResult);
-                            var f = new NumberFormat("###");
-                            print(f.format(feeResult));
+                            var parsed = feeResult.replaceAll(",", "");
+                            var f = int.tryParse(parsed);
+                            print(f);
                           });
                         },
                       ),
@@ -444,4 +452,8 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo> {
       ),
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

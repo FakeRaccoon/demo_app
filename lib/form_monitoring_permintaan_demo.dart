@@ -88,41 +88,41 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                   // setState(() {
                                   //   getDocId = snapshot.data.docs[index].id;
                                   // });
-
-                                  Get.bottomSheet(
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.only(
-                                          topRight: Radius.circular(20),
-                                          topLeft: Radius.circular(20)),
-                                      child: Container(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                .70,
-                                        color: Colors.white,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(20),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                  snapshot.data.docs[index]
-                                                      .data()['barang'],
-                                                  style: GoogleFonts.openSans(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 20)),
-                                              Text(
-                                                  snapshot.data.docs[index]
-                                                      .data()['sales_pengaju'],
-                                                  style: GoogleFonts.openSans(
-                                                      fontSize: 16)),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
+                                  //
+                                  // Get.bottomSheet(
+                                  //   ClipRRect(
+                                  //     borderRadius: BorderRadius.only(
+                                  //         topRight: Radius.circular(20),
+                                  //         topLeft: Radius.circular(20)),
+                                  //     child: Container(
+                                  //       height:
+                                  //           MediaQuery.of(context).size.height *
+                                  //               .70,
+                                  //       color: Colors.white,
+                                  //       child: Padding(
+                                  //         padding: const EdgeInsets.all(20),
+                                  //         child: Column(
+                                  //           crossAxisAlignment:
+                                  //               CrossAxisAlignment.start,
+                                  //           children: [
+                                  //             Text(
+                                  //                 snapshot.data.docs[index]
+                                  //                     .data()['barang'],
+                                  //                 style: GoogleFonts.openSans(
+                                  //                     fontWeight:
+                                  //                         FontWeight.bold,
+                                  //                     fontSize: 20)),
+                                  //             Text(
+                                  //                 snapshot.data.docs[index]
+                                  //                     .data()['sales_pengaju'],
+                                  //                 style: GoogleFonts.openSans(
+                                  //                     fontSize: 16)),
+                                  //           ],
+                                  //         ),
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  // );
                                 },
                                 child: Card(
                                   shape: RoundedRectangleBorder(
@@ -480,7 +480,7 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                         Row(
                           children: [
                             Text(
-                              'Approved ',
+                              'Rejected ',
                               style: GoogleFonts.openSans(
                                   fontWeight: FontWeight.bold),
                             ),
@@ -608,7 +608,7 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                                   ? SizedBox(width: 0)
                                                   : Row(children: [
                                                       Text(
-                                                          'Approved by ' +
+                                                          'Rejected by ' +
                                                               snapshot.data
                                                                       .docs[index]
                                                                       .data()[

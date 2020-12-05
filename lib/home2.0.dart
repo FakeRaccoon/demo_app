@@ -31,9 +31,10 @@ class _Home2State extends State<Home2> {
   bool peminjamanBarangGudang = false;
   bool cashierPage = false;
   bool technicianPage = false;
+  Color colors;
   String userRole;
   String userToken;
-  String _userName;
+  String userName;
 
   SharedPreferences sharedPreferences;
 
@@ -51,7 +52,7 @@ class _Home2State extends State<Home2> {
           (Route<dynamic> route) => false);
     } else {
       setState(() {
-        _userName = sharedPreferences.getString('username');
+        userName = sharedPreferences.getString('username');
         userRole = sharedPreferences.getString('role');
       });
       roleCheck();
@@ -76,12 +77,14 @@ class _Home2State extends State<Home2> {
                 children: [
                   Row(
                     children: [
-                      Text('Hi, ', style: GoogleFonts.openSans(fontSize: 22, color: Colors.grey[500])),
+                      Text('Hi, ',
+                          style: GoogleFonts.openSans(fontSize: 22, color: Colors.grey[500])),
                       Text(sharedPreferences?.getString('username') ?? '',
                           style: GoogleFonts.openSans(fontSize: 22)),
                     ],
                   ),
-                  Text(sharedPreferences?.getString('role') ?? '', style: GoogleFonts.openSans(fontSize: 14)),
+                  Text(sharedPreferences?.getString('role') ?? '',
+                      style: GoogleFonts.openSans(fontSize: 14)),
                 ],
               ),
             ),
@@ -91,47 +94,40 @@ class _Home2State extends State<Home2> {
               shrinkWrap: true,
               children: [
                 CustomMenuCard(
-                  icon: FontAwesomeIcons.solidCopy,
-                  title: 'Pengajuan Demo',
-                  visibility: pengajuanDemo,
-                  ontap: () => Get.to(PermintaanKeliling()),
-                ),
+                    color: pengajuanDemo == true ? Colors.blue : Colors.grey,
+                    icon: FontAwesomeIcons.solidCopy,
+                    title: 'Pengajuan Demo',
+                    ontap: () => pengajuanDemo == true ? Get.to(PermintaanKeliling()) : null),
                 CustomMenuCard(
-                  icon: FontAwesomeIcons.userCheck,
-                  title: 'Monitoring Permintaan Demo',
-                  visibility: permintaanDemo,
-                  ontap: () => Get.to(MonitoringDemo()),
-                ),
+                    color: permintaanDemo == true ? Colors.blue : Colors.grey,
+                    icon: FontAwesomeIcons.userCheck,
+                    title: 'Monitoring Permintaan Demo',
+                    ontap: () => permintaanDemo == true ? Get.to(MonitoringDemo()) : null),
                 CustomMenuCard(
-                  icon: FontAwesomeIcons.chalkboardTeacher,
-                  title: 'Monitoring Penugasan Demo',
-                  visibility: penugasanDemo,
-                  ontap: () => Get.to(MonitoringPenugasa()),
-                ),
+                    color: penugasanDemo == true ? Colors.blue : Colors.grey,
+                    icon: FontAwesomeIcons.chalkboardTeacher,
+                    title: 'Monitoring Penugasan Demo',
+                    ontap: () => penugasanDemo == true ? Get.to(MonitoringPenugasa()) : null),
                 CustomMenuCard(
-                  icon: FontAwesomeIcons.truck,
-                  title: 'Perjalanan Demo',
-                  visibility: perjalananDemo,
-                  ontap: () => Get.to(PerjalananDemo()),
-                ),
+                    color: perjalananDemo == true ? Colors.blue : Colors.grey,
+                    icon: FontAwesomeIcons.truck,
+                    title: 'Perjalanan Demo',
+                    ontap: () => perjalananDemo == true ? Get.to(PerjalananDemo()) : null),
                 CustomMenuCard(
-                  icon: FontAwesomeIcons.peopleCarry,
-                  title: 'Peminjaman Barang',
-                  visibility: peminjamanBarangDemo,
-                  ontap: () => Get.to(Warehouse()),
-                ),
+                    color: peminjamanBarangDemo == true ? Colors.blue : Colors.grey,
+                    icon: FontAwesomeIcons.peopleCarry,
+                    title: 'Peminjaman Barang',
+                    ontap: () => peminjamanBarangDemo == true ? Get.to(Warehouse()) : null),
                 CustomMenuCard(
-                  icon: FontAwesomeIcons.solidMoneyBillAlt,
-                  title: 'Kasir',
-                  visibility: cashierPage,
-                  ontap: () => Get.to(Cashier()),
-                ),
+                    color: cashierPage == true ? Colors.blue : Colors.grey,
+                    icon: FontAwesomeIcons.solidMoneyBillAlt,
+                    title: 'Kasir',
+                    ontap: () => cashierPage == true ? Get.to(Cashier()) : null),
                 CustomMenuCard(
-                  icon: FontAwesomeIcons.wrench,
-                  title: 'Teknisi',
-                  visibility: technicianPage,
-                  ontap: () => Get.to(Technician()),
-                ),
+                    color: technicianPage == true ? Colors.blue : Colors.grey,
+                    icon: FontAwesomeIcons.wrench,
+                    title: 'Teknisi',
+                    ontap: () => technicianPage == true ? Get.to(Technician()) : null),
               ],
             )
           ],
@@ -143,6 +139,7 @@ class _Home2State extends State<Home2> {
   roleCheck() async {
     if (userRole == 'Admin') {
       setState(() {
+        colors = Colors.blue;
         pengajuanDemo = true;
         permintaanDemo = true;
         penugasanDemo = true;
@@ -153,15 +150,25 @@ class _Home2State extends State<Home2> {
         technicianPage = true;
       });
     }
-    if (userRole == 'Sales') {
-      pengajuanDemo = true;
+    if (userRole == 'Kasir') {
+      pengajuanDemo = false;
+      permintaanDemo = false;
+      penugasanDemo = false;
+      perjalananDemo = false;
+      peminjamanBarangDemo = false;
+      peminjamanBarangGudang = false;
+      cashierPage = true;
+      technicianPage = false;
+    }
+    if (userRole == 'Teknisi') {
+      pengajuanDemo = false;
       permintaanDemo = false;
       penugasanDemo = false;
       perjalananDemo = false;
       peminjamanBarangDemo = false;
       peminjamanBarangGudang = false;
       cashierPage = false;
-      technicianPage = false;
+      technicianPage = true;
     }
   }
 }

@@ -14,6 +14,8 @@ class Login extends StatefulWidget {
   _LoginState createState() => _LoginState();
 }
 
+final _formKey = GlobalKey<FormState>();
+
 class _LoginState extends State<Login> {
   @override
   void initState() {
@@ -30,21 +32,21 @@ class _LoginState extends State<Login> {
     });
   }
 
-  TextEditingController usernameController = TextEditingController();
-  TextEditingController passController = TextEditingController();
+  var usernameController = TextEditingController();
+  var passController = TextEditingController();
 
   String externalIds;
-
-
 
   @override
   Widget build(BuildContext context) {
     String md5Convert() {
       return md5.convert(utf8.encode(passController.text)).toString();
     }
+
     return Scaffold(
       body: SafeArea(
         child: Form(
+          key: _formKey,
           child: SingleChildScrollView(
             child: Card(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -60,6 +62,12 @@ class _LoginState extends State<Login> {
                     ),
                     SizedBox(height: 20),
                     TextFormField(
+                      validator: (String value) {
+                        if (value.isEmpty) {
+                          return 'username tidak boleh kosong';
+                        }
+                        return null;
+                      },
                       controller: usernameController,
                       textAlignVertical: TextAlignVertical.center,
                       decoration: InputDecoration(
@@ -69,6 +77,12 @@ class _LoginState extends State<Login> {
                     ),
                     SizedBox(height: 20),
                     TextFormField(
+                      validator: (String value) {
+                        if (value.isEmpty) {
+                          return 'password tidak boleh kosong';
+                        }
+                        return null;
+                      },
                       obscureText: isObscured,
                       controller: passController,
                       textAlignVertical: TextAlignVertical.center,
@@ -87,9 +101,11 @@ class _LoginState extends State<Login> {
                       title: 'Login',
                       color: Colors.blue,
                       ontap: () {
-                        print(usernameController.text);
-                        print(md5Convert());
-                        loginTest(usernameController.text, md5Convert());
+                        if (_formKey.currentState.validate()) {
+                          print(usernameController.text);
+                          print(md5Convert());
+                          loginTest(usernameController.text, md5Convert());
+                        }
                       },
                     ),
                   ],
@@ -101,7 +117,6 @@ class _LoginState extends State<Login> {
       ),
     );
   }
-
 
   loginTest(String username, String password) async {
     String baseUrl = 'http://192.168.0.7:4948/api/login/signin';
@@ -119,7 +134,7 @@ class _LoginState extends State<Login> {
       setState(() {
         _username = data['userName'];
         _token = data['tokenKey'];
-        setUserInfoPreference().whenComplete(() {
+        setUserInfoPreference().then((value) => Center(child: CircularProgressIndicator())).whenComplete(() {
           setUserInfoPreference();
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (BuildContext context) => Body()),

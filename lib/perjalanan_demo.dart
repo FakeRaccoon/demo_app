@@ -211,7 +211,6 @@ class DetailPagePenugasan extends StatefulWidget {
   _DetailPagePenugasanState createState() => _DetailPagePenugasanState();
 }
 
-String _googleUserName = FirebaseAuth.instance.currentUser.displayName.toString();
 
 class _DetailPagePenugasanState extends State<DetailPagePenugasan> {
   final TextEditingController tanggalBerangkatContoller = TextEditingController();

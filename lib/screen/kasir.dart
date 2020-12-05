@@ -143,17 +143,21 @@ class _CashierDetailState extends State<CashierDetail> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    isLoading = false;
+    isLoading = true;
     API.getAccounts().then((value) {
       setState(() {
         kas = value;
         filteredKas = kas;
+        API.getFee().then((value) {
+          setState(() {
+            fee = value;
+            filteredFee = fee;
+          });
+        });
       });
-    });
-    API.getFee().then((value) {
+    }).whenComplete(() {
       setState(() {
-        fee = value;
-        filteredFee = fee;
+        isLoading = false;
       });
     });
   }
@@ -164,88 +168,93 @@ class _CashierDetailState extends State<CashierDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Akun Kas',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 10),
-                    CustomTextField(
-                      controller: kasController,
-                      icon: Icon(Icons.arrow_drop_down),
-                      readOnly: true,
-                      ontap: () => showMaterialModalBottomSheet(
-                        backgroundColor: Colors.transparent,
-                        context: context,
-                        expand: true,
-                        enableDrag: false,
-                        isDismissible: false,
-                        builder: (BuildContext context) {
-                          return kasBottomSheet();
-                        },
+      body: isLoading == true
+          ? LinearProgressIndicator()
+          : Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    elevation: 4,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Akun Kas',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 10),
+                          CustomTextField(
+                            controller: kasController,
+                            icon: Icon(Icons.arrow_drop_down),
+                            readOnly: true,
+                            ontap: () => showMaterialModalBottomSheet(
+                              backgroundColor: Colors.transparent,
+                              context: context,
+                              expand: true,
+                              enableDrag: false,
+                              isDismissible: false,
+                              builder: (BuildContext context) {
+                                return kasBottomSheet();
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          Text(
+                            'Akun Biaya',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 10),
+                          CustomTextField(
+                            icon: Icon(Icons.arrow_drop_down),
+                            controller: feeController,
+                            readOnly: true,
+                            ontap: () => showMaterialModalBottomSheet(
+                              backgroundColor: Colors.transparent,
+                              context: context,
+                              expand: true,
+                              enableDrag: false,
+                              isDismissible: false,
+                              builder: (BuildContext context) {
+                                return feeBottomSheet();
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 50),
+                          Row(
+                            children: [
+                              Text(
+                                'Total',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              Spacer(),
+                              Text(
+                                  'Rp ' +
+                                      currency
+                                          .format(widget.post.data()['estimasiBiaya'])
+                                          .toString(),
+                                  style: TextStyle(fontSize: 16)),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          CustomButton(
+                            ontap: () {
+                              print(feeController.text);
+                            },
+                            title: 'Konfirmasi',
+                            color: Colors.blue,
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 20),
-                    Text(
-                      'Akun Biaya',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 10),
-                    CustomTextField(
-                      icon: Icon(Icons.arrow_drop_down),
-                      controller: feeController,
-                      readOnly: true,
-                      ontap: () => showMaterialModalBottomSheet(
-                        backgroundColor: Colors.transparent,
-                        context: context,
-                        expand: true,
-                        enableDrag: false,
-                        isDismissible: false,
-                        builder: (BuildContext context) {
-                          return feeBottomSheet();
-                        },
-                      ),
-                    ),
-                    SizedBox(height: 50),
-                    Row(
-                      children: [
-                        Text(
-                          'Total',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        Spacer(),
-                        Text(
-                            'Rp ' + currency.format(widget.post.data()['estimasiBiaya']).toString(),
-                            style: TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    CustomButton(
-                      ontap: () {
-                        print(feeController.text);
-                      },
-                      title: 'Konfirmasi',
-                      color: Colors.blue,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                Text(widget.post.data()['barang']),
+              ],
             ),
-          ),
-          Text(widget.post.data()['barang']),
-        ],
-      ),
     );
   }
 
@@ -397,26 +406,26 @@ class _CashierDetailState extends State<CashierDetail> {
                       child: isLoading
                           ? Center(child: CircularProgressIndicator())
                           : ListView.separated(
-                        itemCount: filteredKas.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            onTap: () {
-                              setState(() {
-                                feeController.text = filteredFee[index].name;
-                                feeId = filteredFee[index].id.toInt();
-                                print(feeId);
-                              });
-                              Navigator.pop(context);
-                              setModalState(() {
-                                filteredFee = fee;
-                              });
-                            },
-                            title: Text(filteredFee[index].name),
-                          );
-                        },
-                        separatorBuilder: (BuildContext context, int index) {
-                          return Divider();
-                        },
+                              itemCount: filteredKas.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  onTap: () {
+                                    setState(() {
+                                      feeController.text = filteredFee[index].name;
+                                      feeId = filteredFee[index].id.toInt();
+                                      print(feeId);
+                                    });
+                                    Navigator.pop(context);
+                                    setModalState(() {
+                                      filteredFee = fee;
+                                    });
+                                  },
+                                  title: Text(filteredFee[index].name),
+                                );
+                              },
+                              separatorBuilder: (BuildContext context, int index) {
+                                return Divider();
+                                },
                       ),
                     ),
                   ),
@@ -428,5 +437,4 @@ class _CashierDetailState extends State<CashierDetail> {
       },
     );
   }
-
 }
