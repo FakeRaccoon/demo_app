@@ -362,7 +362,7 @@ class _PermintaanKelilingState extends State<PermintaanKeliling> {
                                 title: 'Ajukan',
                                 ontap: () {
                                   Notif.sendAndGetNotification(
-                                      'Ada permintaan demo baru nih', ['teknisi']);
+                                      'Ada permintaan demo baru nih', ['admin']);
                                   // if (_formKey.currentState.validate()) {
                                   //   PostResult.postApi(
                                   //     provinceId,

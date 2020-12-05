@@ -9,7 +9,7 @@ String customExternalUserId = ("technician");
 
 class Notif {
   static Future getOneSignal() async {
-    var userId = await OneSignal.shared.setExternalUserId("technician");
+    var userId = await OneSignal.shared.setExternalUserId("admin");
     print(userId);
   }
 
