@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:atana/Body.dart';
+import 'package:atana/body.dart';
 import 'package:atana/component/button.dart';
 import 'package:atana/service/notification.dart';
 import 'package:http/http.dart' as http;

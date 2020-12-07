@@ -1,4 +1,4 @@
-import 'package:atana/Body.dart';
+import 'package:atana/body.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
