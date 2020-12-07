@@ -10,7 +10,6 @@ class Root extends StatefulWidget {
 }
 
 class _RootState extends State<Root> {
-
   SharedPreferences sharedPreferences;
 
   @override
@@ -20,9 +19,9 @@ class _RootState extends State<Root> {
   }
 
   logout() async {
-   sharedPreferences.clear();
-   sharedPreferences.commit();
-   await checkLoginStatus();
+    sharedPreferences.clear();
+    sharedPreferences.commit();
+    await checkLoginStatus();
   }
 
   checkLoginStatus() async {
@@ -31,7 +30,6 @@ class _RootState extends State<Root> {
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (BuildContext context) => Login()),
           (Route<dynamic> route) => false);
-      print('this session is clear');
     } else {
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (BuildContext context) => Body()),

@@ -3,18 +3,14 @@ import 'package:atana/form_monitoring_pengasan_demo.dart';
 import 'package:atana/form_monitoring_permintaan_demo.dart';
 import 'package:atana/form_permintaan_keliling.dart';
 import 'package:atana/login.dart';
-import 'package:atana/model/user_model.dart';
 import 'package:atana/perjalanan_demo.dart';
-import 'package:atana/root.dart';
 import 'package:atana/screen/kasir.dart';
 import 'package:atana/screen/kepala_gudang.dart';
 import 'package:atana/screen/teknisi.dart';
-import 'package:atana/service/api.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Home2 extends StatefulWidget {
@@ -23,7 +19,6 @@ class Home2 extends StatefulWidget {
 }
 
 class _Home2State extends State<Home2> {
-  UserModel user = UserModel('');
   bool pengajuanDemo = false;
   bool permintaanDemo = false;
   bool penugasanDemo = false;

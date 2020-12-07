@@ -134,7 +134,9 @@ class _LoginState extends State<Login> {
       setState(() {
         _username = data['userName'];
         _token = data['tokenKey'];
-        setUserInfoPreference().then((value) => Center(child: CircularProgressIndicator())).whenComplete(() {
+        setUserInfoPreference()
+            .then((value) => Center(child: CircularProgressIndicator()))
+            .whenComplete(() {
           setUserInfoPreference();
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (BuildContext context) => Body()),

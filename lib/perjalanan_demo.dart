@@ -210,7 +210,6 @@ class DetailPagePenugasan extends StatefulWidget {
   _DetailPagePenugasanState createState() => _DetailPagePenugasanState();
 }
 
-
 class _DetailPagePenugasanState extends State<DetailPagePenugasan> {
   final TextEditingController tanggalBerangkatContoller = TextEditingController();
   final TextEditingController tanggalKembaliController = TextEditingController();
@@ -261,12 +260,12 @@ class _DetailPagePenugasanState extends State<DetailPagePenugasan> {
     warehouse2 = false;
     warehouse3 = false;
     isLoading = true;
-    API.getWarehouse().then((value){
+    API.getWarehouse().then((value) {
       setState(() {
         warehouse = value;
         filteredWarehouse = warehouse;
       });
-    }).whenComplete((){
+    }).whenComplete(() {
       setState(() {
         isLoading = false;
       });
@@ -436,27 +435,27 @@ class _DetailPagePenugasanState extends State<DetailPagePenugasan> {
                       child: isLoading
                           ? Center(child: CircularProgressIndicator())
                           : ListView.separated(
-                        itemCount: filteredWarehouse.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            onTap: () {
-                              setState(() {
-                                warehouseController.text = filteredWarehouse[index].name;
-                                warehouseId = filteredWarehouse[index].id.toInt();
-                                print(warehouseId);
-                              });
-                              Navigator.pop(context);
-                              setModalState(() {
-                                filteredWarehouse = warehouse;
-                              });
-                            },
-                            title: Text(filteredWarehouse[index].name),
-                          );
-                        },
-                        separatorBuilder: (BuildContext context, int index) {
-                          return Divider();
-                        },
-                      ),
+                              itemCount: filteredWarehouse.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  onTap: () {
+                                    setState(() {
+                                      warehouseController.text = filteredWarehouse[index].name;
+                                      warehouseId = filteredWarehouse[index].id.toInt();
+                                      print(warehouseId);
+                                    });
+                                    Navigator.pop(context);
+                                    setModalState(() {
+                                      filteredWarehouse = warehouse;
+                                    });
+                                  },
+                                  title: Text(filteredWarehouse[index].name),
+                                );
+                              },
+                              separatorBuilder: (BuildContext context, int index) {
+                                return Divider();
+                              },
+                            ),
                     ),
                   ),
                 ],
@@ -467,5 +466,4 @@ class _DetailPagePenugasanState extends State<DetailPagePenugasan> {
       },
     );
   }
-
 }

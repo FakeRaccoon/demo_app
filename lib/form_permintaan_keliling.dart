@@ -109,7 +109,7 @@ class _PermintaanKelilingState extends State<PermintaanKeliling> {
         title: Text('Permintaan keliling'),
       ),
       body: isLoading == true
-          ? Center(child: CircularProgressIndicator())
+          ? LinearProgressIndicator()
           : Form(
               key: _formKey,
               child: SingleChildScrollView(
