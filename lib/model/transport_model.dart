@@ -1,18 +1,14 @@
 class TransportModel {
-  final int id;
+  final double id;
   final String name;
-  final String type;
-  final String plate;
 
-  TransportModel({this.id, this.name, this.type, this.plate});
+  TransportModel({this.id, this.name});
 
   factory TransportModel.fromJson(Map<String, dynamic> json) {
     if (json == null) return null;
     return TransportModel(
-      id: json["id"],
-      name: json["name"],
-      type: json['type'],
-      plate: json['plate'],
+      id: json["employeeId"],
+      name: json["employeeName"],
     );
   }
 

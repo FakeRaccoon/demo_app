@@ -1,3 +1,4 @@
+import 'package:atana/service/notification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -65,13 +66,12 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                           children: [
                             Text(
                               'Pending ',
-                              style: GoogleFonts.openSans(
-                                  fontWeight: FontWeight.bold),
+                              style: GoogleFonts.openSans(fontWeight: FontWeight.bold),
                             ),
                             Text(
                               snapshot.data.docs.length.toString(),
-                              style: GoogleFonts.openSans(
-                                  fontWeight: FontWeight.bold, fontSize: 16),
+                              style:
+                                  GoogleFonts.openSans(fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                           ],
                         ),
@@ -127,8 +127,7 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                 child: Card(
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10)),
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: 5, vertical: 10),
+                                  margin: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                                   elevation: 4,
                                   child: Padding(
                                     padding: const EdgeInsets.all(20),
@@ -140,87 +139,72 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                           right: 0,
                                         ),
                                         Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Container(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  .80,
+                                              width: MediaQuery.of(context).size.width * .80,
                                               child: Text(
-                                                  snapshot.data.docs[index]
-                                                      .data()['barang'],
+                                                  snapshot.data.docs[index].data()['barang'],
                                                   style: GoogleFonts.openSans(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 18)),
+                                                      fontWeight: FontWeight.bold, fontSize: 18)),
                                             ),
                                             Text(
                                                 snapshot.data.docs[index]
-                                                        .data()[
-                                                    'tanggal_perkiraan'],
-                                                style: GoogleFonts.openSans(
-                                                    fontSize: 16)),
+                                                    .data()['tanggal_perkiraan'],
+                                                style: GoogleFonts.openSans(fontSize: 16)),
                                             Row(
                                               children: [
+                                                Text(snapshot.data.docs[index].data()['city'],
+                                                    style: GoogleFonts.openSans(fontSize: 16)),
                                                 Text(
-                                                    snapshot.data.docs[index]
-                                                        .data()['city'],
-                                                    style: GoogleFonts.openSans(
-                                                        fontSize: 16)),
-                                                Text(
-                                                    snapshot.data.docs[index]
-                                                                    .data()[
-                                                                'district'] ==
+                                                    snapshot.data.docs[index].data()['district'] ==
                                                             null
                                                         ? ''
                                                         : ', ${snapshot.data.docs[index].data()['district']}',
-                                                    style: GoogleFonts.openSans(
-                                                        fontSize: 16)),
+                                                    style: GoogleFonts.openSans(fontSize: 16)),
                                               ],
                                             ),
-                                            Text(
-                                                snapshot.data.docs[index]
-                                                    .data()['tipe_demo'],
-                                                style: GoogleFonts.openSans(
-                                                    fontSize: 16)),
+                                            Text(snapshot.data.docs[index].data()['tipe_demo'],
+                                                style: GoogleFonts.openSans(fontSize: 16)),
                                             SizedBox(height: 20),
                                             Row(
                                               children: [
                                                 Expanded(
                                                   child: FlatButton(
-                                                    onPressed: () {},
+                                                    onPressed: () {
+                                                      Notif.rejectNotification('ABC', 'message');
+                                                    },
                                                     color: Colors.blue,
                                                     child: Text(
                                                       'Approve',
                                                       style: GoogleFonts.openSans(
                                                           color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.w700,
+                                                          fontWeight: FontWeight.w700,
                                                           fontSize: 14),
                                                     ),
                                                     height: 40,
                                                     minWidth: MediaQuery.of(context).size.width / 2,
-                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                    shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(10)),
                                                   ),
                                                 ),
                                                 SizedBox(width: 20),
                                                 Expanded(
                                                   child: FlatButton(
-                                                    onPressed: () {},
+                                                    onPressed: () => Notif.rejectNotification('ABC',
+                                                        'ABC, pengajuan demo barang ${snapshot.data.docs[index].data()['barang']} anda di reject 😨'),
                                                     color: Colors.red,
                                                     child: Text(
                                                       'Reject',
                                                       style: GoogleFonts.openSans(
                                                           color: Colors.white,
-                                                          fontWeight:
-                                                          FontWeight.w700,
+                                                          fontWeight: FontWeight.w700,
                                                           fontSize: 14),
                                                     ),
                                                     height: 40,
                                                     minWidth: MediaQuery.of(context).size.width / 2,
-                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                    shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(10)),
                                                   ),
                                                 ),
                                               ],
@@ -266,13 +250,12 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                           children: [
                             Text(
                               'Approved ',
-                              style: GoogleFonts.openSans(
-                                  fontWeight: FontWeight.bold),
+                              style: GoogleFonts.openSans(fontWeight: FontWeight.bold),
                             ),
                             Text(
                               snapshot.data.docs.length.toString(),
-                              style: GoogleFonts.openSans(
-                                  fontWeight: FontWeight.bold, fontSize: 16),
+                              style:
+                                  GoogleFonts.openSans(fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                           ],
                         ),
@@ -296,28 +279,19 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                           topRight: Radius.circular(20),
                                           topLeft: Radius.circular(20)),
                                       child: Container(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                .70,
+                                        height: MediaQuery.of(context).size.height * .70,
                                         color: Colors.white,
                                         child: Padding(
                                           padding: const EdgeInsets.all(20),
                                           child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                  snapshot.data.docs[index]
-                                                      .data()['barang'],
+                                              Text(snapshot.data.docs[index].data()['barang'],
                                                   style: GoogleFonts.openSans(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 20)),
+                                                      fontWeight: FontWeight.bold, fontSize: 20)),
                                               Text(
-                                                  snapshot.data.docs[index]
-                                                      .data()['sales_pengaju'],
-                                                  style: GoogleFonts.openSans(
-                                                      fontSize: 16)),
+                                                  snapshot.data.docs[index].data()['sales_pengaju'],
+                                                  style: GoogleFonts.openSans(fontSize: 16)),
                                             ],
                                           ),
                                         ),
@@ -328,8 +302,7 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                 child: Card(
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10)),
-                                  margin: EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 5),
+                                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                                   elevation: 4,
                                   child: Padding(
                                     padding: const EdgeInsets.all(20),
@@ -341,67 +314,43 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                           right: 0,
                                         ),
                                         Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Container(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  .80,
+                                              width: MediaQuery.of(context).size.width * .80,
                                               child: Text(
-                                                  snapshot.data.docs[index]
-                                                      .data()['barang'],
+                                                  snapshot.data.docs[index].data()['barang'],
                                                   style: GoogleFonts.openSans(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 18)),
+                                                      fontWeight: FontWeight.bold, fontSize: 18)),
                                             ),
                                             Text(
                                                 snapshot.data.docs[index]
-                                                        .data()[
-                                                    'tanggal_perkiraan'],
-                                                style: GoogleFonts.openSans(
-                                                    fontSize: 16)),
+                                                    .data()['tanggal_perkiraan'],
+                                                style: GoogleFonts.openSans(fontSize: 16)),
                                             Row(
                                               children: [
+                                                Text(snapshot.data.docs[index].data()['city'],
+                                                    style: GoogleFonts.openSans(fontSize: 16)),
                                                 Text(
-                                                    snapshot.data.docs[index]
-                                                        .data()['city'],
-                                                    style: GoogleFonts.openSans(
-                                                        fontSize: 16)),
-                                                Text(
-                                                    snapshot.data.docs[index]
-                                                                    .data()[
-                                                                'district'] ==
+                                                    snapshot.data.docs[index].data()['district'] ==
                                                             null
                                                         ? ''
                                                         : ', ${snapshot.data.docs[index].data()['district']}',
-                                                    style: GoogleFonts.openSans(
-                                                        fontSize: 16)),
+                                                    style: GoogleFonts.openSans(fontSize: 16)),
                                               ],
                                             ),
-                                            Text(
-                                                snapshot.data.docs[index]
-                                                    .data()['tipe_demo'],
-                                                style: GoogleFonts.openSans(
-                                                    fontSize: 16)),
+                                            Text(snapshot.data.docs[index].data()['tipe_demo'],
+                                                style: GoogleFonts.openSans(fontSize: 16)),
                                             Column(children: [
-                                              snapshot.data.docs[index].data()[
-                                                          'approvedBy'] ==
-                                                      null
+                                              snapshot.data.docs[index].data()['approvedBy'] == null
                                                   ? SizedBox(width: 0)
                                                   : Row(children: [
                                                       Text(
                                                           'Approved by ' +
-                                                              snapshot.data
-                                                                      .docs[index]
-                                                                      .data()[
-                                                                  'approvedBy'],
-                                                          style: GoogleFonts
-                                                              .openSans(
-                                                                  fontSize:
-                                                                      16)),
+                                                              snapshot.data.docs[index]
+                                                                  .data()['approvedBy'],
+                                                          style:
+                                                              GoogleFonts.openSans(fontSize: 16)),
                                                     ])
                                             ]),
                                             SizedBox(height: 20),
@@ -411,29 +360,22 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                                   middleText: '',
                                                   textConfirm: 'Ya',
                                                   textCancel: 'Batal',
-                                                  confirmTextColor:
-                                                      Colors.white,
+                                                  confirmTextColor: Colors.white,
                                                   onConfirm: () {
                                                     Navigator.pop(context);
                                                     setState(() {
-                                                      getDocId = snapshot
-                                                          .data.docs[index].id;
+                                                      getDocId = snapshot.data.docs[index].id;
                                                     });
                                                     Database()
-                                                        .approve(getDocId,
-                                                            'Admin')
+                                                        .approve(getDocId, 'Admin')
                                                         .whenComplete(() {
                                                       Get.snackbar(
                                                         'Success',
                                                         'Data berhasil di approve',
-                                                        margin:
-                                                            EdgeInsets.all(20),
+                                                        margin: EdgeInsets.all(20),
                                                         colorText: Colors.white,
-                                                        backgroundColor:
-                                                            Colors.grey[900],
-                                                        snackPosition:
-                                                            SnackPosition
-                                                                .BOTTOM,
+                                                        backgroundColor: Colors.grey[900],
+                                                        snackPosition: SnackPosition.BOTTOM,
                                                       );
                                                     });
                                                   }),
@@ -481,13 +423,12 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                           children: [
                             Text(
                               'Rejected ',
-                              style: GoogleFonts.openSans(
-                                  fontWeight: FontWeight.bold),
+                              style: GoogleFonts.openSans(fontWeight: FontWeight.bold),
                             ),
                             Text(
                               snapshot.data.docs.length.toString(),
-                              style: GoogleFonts.openSans(
-                                  fontWeight: FontWeight.bold, fontSize: 16),
+                              style:
+                                  GoogleFonts.openSans(fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                           ],
                         ),
@@ -511,28 +452,19 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                           topRight: Radius.circular(20),
                                           topLeft: Radius.circular(20)),
                                       child: Container(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                .70,
+                                        height: MediaQuery.of(context).size.height * .70,
                                         color: Colors.white,
                                         child: Padding(
                                           padding: const EdgeInsets.all(20),
                                           child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                  snapshot.data.docs[index]
-                                                      .data()['barang'],
+                                              Text(snapshot.data.docs[index].data()['barang'],
                                                   style: GoogleFonts.openSans(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 20)),
+                                                      fontWeight: FontWeight.bold, fontSize: 20)),
                                               Text(
-                                                  snapshot.data.docs[index]
-                                                      .data()['sales_pengaju'],
-                                                  style: GoogleFonts.openSans(
-                                                      fontSize: 16)),
+                                                  snapshot.data.docs[index].data()['sales_pengaju'],
+                                                  style: GoogleFonts.openSans(fontSize: 16)),
                                             ],
                                           ),
                                         ),
@@ -543,8 +475,7 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                 child: Card(
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10)),
-                                  margin: EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 5),
+                                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                                   elevation: 4,
                                   child: Padding(
                                     padding: const EdgeInsets.all(20),
@@ -556,67 +487,43 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                           right: 0,
                                         ),
                                         Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Container(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  .80,
+                                              width: MediaQuery.of(context).size.width * .80,
                                               child: Text(
-                                                  snapshot.data.docs[index]
-                                                      .data()['barang'],
+                                                  snapshot.data.docs[index].data()['barang'],
                                                   style: GoogleFonts.openSans(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 18)),
+                                                      fontWeight: FontWeight.bold, fontSize: 18)),
                                             ),
                                             Text(
                                                 snapshot.data.docs[index]
-                                                        .data()[
-                                                    'tanggal_perkiraan'],
-                                                style: GoogleFonts.openSans(
-                                                    fontSize: 16)),
+                                                    .data()['tanggal_perkiraan'],
+                                                style: GoogleFonts.openSans(fontSize: 16)),
                                             Row(
                                               children: [
+                                                Text(snapshot.data.docs[index].data()['city'],
+                                                    style: GoogleFonts.openSans(fontSize: 16)),
                                                 Text(
-                                                    snapshot.data.docs[index]
-                                                        .data()['city'],
-                                                    style: GoogleFonts.openSans(
-                                                        fontSize: 16)),
-                                                Text(
-                                                    snapshot.data.docs[index]
-                                                                    .data()[
-                                                                'district'] ==
+                                                    snapshot.data.docs[index].data()['district'] ==
                                                             null
                                                         ? ''
                                                         : ', ${snapshot.data.docs[index].data()['district']}',
-                                                    style: GoogleFonts.openSans(
-                                                        fontSize: 16)),
+                                                    style: GoogleFonts.openSans(fontSize: 16)),
                                               ],
                                             ),
-                                            Text(
-                                                snapshot.data.docs[index]
-                                                    .data()['tipe_demo'],
-                                                style: GoogleFonts.openSans(
-                                                    fontSize: 16)),
+                                            Text(snapshot.data.docs[index].data()['tipe_demo'],
+                                                style: GoogleFonts.openSans(fontSize: 16)),
                                             Column(children: [
-                                              snapshot.data.docs[index].data()[
-                                                          'approvedBy'] ==
-                                                      null
+                                              snapshot.data.docs[index].data()['approvedBy'] == null
                                                   ? SizedBox(width: 0)
                                                   : Row(children: [
                                                       Text(
                                                           'Rejected by ' +
-                                                              snapshot.data
-                                                                      .docs[index]
-                                                                      .data()[
-                                                                  'approvedBy'],
-                                                          style: GoogleFonts
-                                                              .openSans(
-                                                                  fontSize:
-                                                                      16)),
+                                                              snapshot.data.docs[index]
+                                                                  .data()['approvedBy'],
+                                                          style:
+                                                              GoogleFonts.openSans(fontSize: 16)),
                                                     ])
                                             ]),
                                             SizedBox(height: 20),
@@ -626,29 +533,22 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                                   middleText: '',
                                                   textConfirm: 'Ya',
                                                   textCancel: 'Batal',
-                                                  confirmTextColor:
-                                                      Colors.white,
+                                                  confirmTextColor: Colors.white,
                                                   onConfirm: () {
                                                     Navigator.pop(context);
                                                     setState(() {
-                                                      getDocId = snapshot
-                                                          .data.docs[index].id;
+                                                      getDocId = snapshot.data.docs[index].id;
                                                     });
                                                     Database()
-                                                        .approve(getDocId,
-                                                            'Admin')
+                                                        .approve(getDocId, 'Admin')
                                                         .whenComplete(() {
                                                       Get.snackbar(
                                                         'Success',
                                                         'Data berhasil di approve',
-                                                        margin:
-                                                            EdgeInsets.all(20),
+                                                        margin: EdgeInsets.all(20),
                                                         colorText: Colors.white,
-                                                        backgroundColor:
-                                                            Colors.grey[900],
-                                                        snackPosition:
-                                                            SnackPosition
-                                                                .BOTTOM,
+                                                        backgroundColor: Colors.grey[900],
+                                                        snackPosition: SnackPosition.BOTTOM,
                                                       );
                                                     });
                                                   }),
@@ -687,8 +587,7 @@ class DetailPage extends StatefulWidget {
   _DetailPageState createState() => _DetailPageState();
 }
 
-String _googleUserName =
-    FirebaseAuth.instance.currentUser.displayName.toString();
+String _googleUserName = FirebaseAuth.instance.currentUser.displayName.toString();
 
 class _DetailPageState extends State<DetailPage> {
   @override
@@ -703,26 +602,21 @@ class _DetailPageState extends State<DetailPage> {
               padding: const EdgeInsets.all(20),
               child: InkWell(
                 onTap: () {
-                  Database()
-                      .approve(widget.docId, _googleUserName)
-                      .whenComplete(() {
+                  Database().approve(widget.docId, _googleUserName).whenComplete(() {
                     Navigator.pop(context);
                     Get.snackbar('title', 'Data Approved');
                   });
                 },
                 child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Colors.blue),
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(8), color: Colors.blue),
                   height: 40,
                   width: double.infinity,
                   child: Center(
                     child: Text(
                       'Approve',
                       style: GoogleFonts.openSans(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14),
+                          color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14),
                     ),
                   ),
                 ),

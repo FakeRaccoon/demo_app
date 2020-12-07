@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MonitoringPenugasa extends StatefulWidget {
   @override
@@ -213,6 +214,9 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo>
 
   TextEditingController feeController = TextEditingController();
   var currency = NumberFormat.decimalPattern();
+
+  Future getToken() async {}
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -318,11 +322,15 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo>
                                   mode: Mode.BOTTOM_SHEET,
                                   hint: 'Sopir',
                                   onFind: (String filter) async {
-                                    var response = await Dio()
-                                        .get(baseDemoUrl + 'transport', queryParameters: {
-                                      'Accept': 'application/Json',
-                                    });
-                                    var models = TransportModel.fromJsonList(response.data);
+                                    SharedPreferences sharedPreferences;
+                                    sharedPreferences = await SharedPreferences.getInstance();
+                                    final token = sharedPreferences.getString('token');
+                                    final response = await Dio().get(
+                                        "http://192.168.0.7:4948/api/Employees/GetEmployeeSimple",
+                                        options:
+                                            Options(headers: {"Authorization": "Bearer $token"}));
+                                    var models = TransportModel.fromJsonList(
+                                        response.data["employeeAccounting"]);
                                     return models;
                                   },
                                   onChanged: (TransportModel data) {

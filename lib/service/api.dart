@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:atana/model/result.dart';
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -99,14 +100,14 @@ class API {
     SharedPreferences sharedPreferences;
     sharedPreferences = await SharedPreferences.getInstance();
     final token = sharedPreferences.getString('token');
-    final response = await http.get(url, headers: {
-      'Authorization': "Bearer $token",
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    });
+    final response = await Dio().get(url,
+        options: Options(headers: {
+          'Authorization': "Bearer $token",
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }));
     if (response.statusCode == 200) {
-      final decode = jsonDecode(response.body);
-      List parsed = decode["warehouse"];
+      List parsed = response.data["warehouse"];
       return parsed.map((e) => WarehouseResult.fromJson(e)).toList();
     }
   }

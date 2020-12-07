@@ -22,7 +22,6 @@ class _LoginState extends State<Login> {
     // TODO: implement initState
     super.initState();
     isObscured = true;
-    Notif.getOneSignal();
   }
 
   bool isObscured = true;
@@ -138,6 +137,7 @@ class _LoginState extends State<Login> {
             .then((value) => Center(child: CircularProgressIndicator()))
             .whenComplete(() {
           setUserInfoPreference();
+          Notif.getOneSignal();
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (BuildContext context) => Body()),
               (Route<dynamic> route) => false);

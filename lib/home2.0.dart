@@ -7,6 +7,7 @@ import 'package:atana/perjalanan_demo.dart';
 import 'package:atana/screen/kasir.dart';
 import 'package:atana/screen/kepala_gudang.dart';
 import 'package:atana/screen/teknisi.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -38,6 +39,16 @@ class _Home2State extends State<Home2> {
   void initState() {
     super.initState();
     checkLoginStatus();
+    dio();
+  }
+
+  Future dio() async {
+    SharedPreferences sharedPreferences;
+    sharedPreferences = await SharedPreferences.getInstance();
+    final token = sharedPreferences.getString('token');
+    final response = await Dio().get("http://192.168.0.7:4948/api/Employees/GetEmployeeSimple",
+        options: Options(headers: {"Authorization": "Bearer $token"}));
+    print(response.data["employeeAccounting"]);
   }
 
   checkLoginStatus() async {

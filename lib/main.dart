@@ -13,17 +13,6 @@ void main() async {
   OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
   OneSignal.shared.init("956ae786-10ab-4d63-a9dd-82fb34904881");
   OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
-  OneSignal.shared.setNotificationReceivedHandler((notification) {
-    print(notification.payload.body);
-  });
-  OneSignal.shared.setNotificationOpenedHandler((openedResult) {
-    if (openedResult.notification.payload.body == "Permintaan demo") {
-      Get.to(MonitoringDemo());
-    }
-    if (openedResult.notification.payload.body == "Permintaan penugasan") {
-      Get.to(MonitoringPenugasa());
-    }
-  });
   await OneSignal.shared.promptUserForPushNotificationPermission(fallbackToSettings: true);
   runApp(MyApp());
 }

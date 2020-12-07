@@ -1,12 +1,10 @@
 import 'package:atana/component/button.dart';
 import 'package:atana/component/customTFsmall.dart';
-import 'package:atana/model/post_result.dart';
 import 'package:atana/service/api.dart';
 import 'package:atana/service/notification.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -71,7 +69,7 @@ class _PermintaanKelilingState extends State<PermintaanKeliling> {
 
     // ReqResPost.reqResPost();
 
-    API.getItems2('bromo').then((value) {
+    API.getItems2('yanmar').then((value) {
       item = value;
       filteredItem = item;
     }).whenComplete(() {
@@ -361,8 +359,8 @@ class _PermintaanKelilingState extends State<PermintaanKeliling> {
                                 color: Colors.blue,
                                 title: 'Ajukan',
                                 ontap: () {
-                                  Notif.sendAndGetNotification(
-                                      'Ada permintaan demo baru nih', ['admin']);
+                                  Notif.roleNotification(
+                                      'Permintaan demo');
                                   // if (_formKey.currentState.validate()) {
                                   //   PostResult.postApi(
                                   //     provinceId,
