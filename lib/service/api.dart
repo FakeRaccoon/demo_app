@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:atana/Examples/add_data.dart';
 import 'package:atana/model/result.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,20 +22,11 @@ class API {
   SharedPreferences sharedPreferences;
 
   static Future getItems() async {
-    try {
-      final response = await http.get(
-        baseUrl,
-        headers: {HttpHeaders.authorizationHeader: apiKey},
-      );
-      if (response.statusCode == 200) {
-        print('Items Ok');
-        List jsonResponse = json.decode(response.body);
-        return jsonResponse.map((e) => ItemResult.fromJson(e)).toList();
-      } else {
-        throw Exception('Error');
-      }
-    } catch (e) {
-      throw Exception(e.toString());
+    final response = await http.get(baseUrl, headers: {HttpHeaders.authorizationHeader: apiKey});
+    if (response.statusCode == 200) {
+      print('Items Ok');
+      List jsonResponse = json.decode(response.body);
+      return jsonResponse.map((e) => ItemResult.fromJson(e)).toList();
     }
   }
 
@@ -140,47 +128,35 @@ class API {
     }
   }
 
-  static Future<List<ProvinceResult>> getProvinceResult() async {
+  static Future getProvinceResult() async {
     final response = await http.get(baseDemoUrl + 'province', headers: auth);
     if (response.statusCode == 200) {
-      // Map<String, dynamic> map = json.decode(response.body);
-      // List<dynamic> data = map["result"];
-      // final Map parsed = json.decode(response.body);
       var responseJson = json.decode(response.body);
       print(responseJson['message']);
       print('Total province : ' + responseJson['total_data'].toString());
-      return (responseJson['result'] as List).map((e) => ProvinceResult.fromJson(e)).toList();
-      // return provinceFromJson(response.body);
+      return responseJson['result'].map((e) => ProvinceResult.fromJson(e)).toList();
     }
   }
 
-  static Future<List<CityResult>> getCityResult(String provinceId) async {
+  static Future getCityResult(String provinceId) async {
     final response = await http.get(baseDemoUrl + 'city?province_id=' + provinceId, headers: auth);
     if (response.statusCode == 200) {
       print('Ok');
-      // Map<String, dynamic> map = json.decode(response.body);
-      // List<dynamic> data = map["result"];
-      // final Map parsed = json.decode(response.body);
       var responseJson = json.decode(response.body);
       print(responseJson['message']);
       print('Total city : ' + responseJson['total_data'].toString());
-      return (responseJson['result'] as List).map((e) => CityResult.fromJson(e)).toList();
-      // return provinceFromJson(response.body);
+      return responseJson['result'].map((e) => CityResult.fromJson(e)).toList();
     }
   }
 
-  static Future<List<DistrictResult>> getDistrictResult(String cityId) async {
+  static Future getDistrictResult(String cityId) async {
     final response = await http.get(baseDemoUrl + 'district?city_id=' + cityId, headers: auth);
     if (response.statusCode == 200) {
       print('Ok');
-      // Map<String, dynamic> map = json.decode(response.body);
-      // List<dynamic> data = map["result"];
-      // final Map parsed = json.decode(response.body);
       var responseJson = json.decode(response.body);
       print(responseJson['message']);
       print('Total district : ' + responseJson['total_data'].toString());
-      return (responseJson['result'] as List).map((e) => DistrictResult.fromJson(e)).toList();
-      // return provinceFromJson(response.body);
+      return responseJson['result'].map((e) => DistrictResult.fromJson(e)).toList();
     }
   }
 }
