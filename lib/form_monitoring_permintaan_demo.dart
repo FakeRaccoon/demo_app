@@ -172,7 +172,8 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                                 Expanded(
                                                   child: FlatButton(
                                                     onPressed: () {
-                                                      Notif.rejectNotification('ABC', 'message');
+                                                      Notif.getNotification('ABC',
+                                                          'ABC, pengajuan demo barang ${snapshot.data.docs[index].data()['barang']} kamu sudah disetujui nih 😃');
                                                     },
                                                     color: Colors.blue,
                                                     child: Text(
@@ -191,7 +192,7 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                                 SizedBox(width: 20),
                                                 Expanded(
                                                   child: FlatButton(
-                                                    onPressed: () => Notif.rejectNotification('ABC',
+                                                    onPressed: () => Notif.getNotification('ABC',
                                                         'ABC, pengajuan demo barang ${snapshot.data.docs[index].data()['barang']} anda di reject 😨'),
                                                     color: Colors.red,
                                                     child: Text(

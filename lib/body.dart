@@ -1,10 +1,8 @@
 import 'package:atana/home2.0.dart';
 import 'package:atana/screen/notification.dart';
 import 'package:atana/screen/user_page.dart';
-import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class Body extends StatefulWidget {
   @override
@@ -38,13 +36,7 @@ class _BodyState extends State<Body> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Badge(
-              badgeContent:
-                  Text('2', style: GoogleFonts.openSans(color: Colors.white)),
-              badgeColor: Colors.blue,
-              animationType: BadgeAnimationType.fade,
-              child: FaIcon(FontAwesomeIcons.solidBell),
-            ),
+            icon: FaIcon(FontAwesomeIcons.solidBell),
             label: 'Notifikasi',
           ),
           BottomNavigationBarItem(

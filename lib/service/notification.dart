@@ -20,7 +20,7 @@ class Notif {
     print(username);
   }
 
-  static Future rejectNotification(String username, String message) async {
+  static Future getNotification(String username, String message) async {
     final response = await http.post(notificationUrl,
         headers: {
           "Accept": "application/json",
@@ -32,7 +32,7 @@ class Notif {
           "include_external_user_ids": [username],
           "channel_for_external_user_ids": "push",
           "data": {"foo": "bar"},
-          "headings": {"en": "Notifikasi baru buat kamu nich"},
+          "headings": {"en": "Notifikasi baru buat kamu nih"},
           "contents": {"en": message}
         }));
     print(response.statusCode);
@@ -69,6 +69,37 @@ class Notif {
     print(role);
     if (response.statusCode == 200) {
       print(response.statusCode);
+    } else {
+      print(customExternalUserId);
+    }
+  }
+
+  static Future multiRoleNotification(String message, String role) async {
+    final response = await http.post(notificationUrl,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Authorization": "BASIC " + notificationKey,
+        },
+        body: jsonEncode({
+          "app_id": "956ae786-10ab-4d63-a9dd-82fb34904881",
+          // "include_external_user_ids": role,
+          "channel_for_external_user_ids": "push",
+          "tags": [
+            {
+              "key": "role",
+              "relation": "=",
+              "value": role,
+            }
+          ],
+          "data": {"foo": "bar"},
+          "headings": {"en": "Notifikasi baru"},
+          "contents": {"en": message}
+        }));
+    print(role);
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(response.body);
     } else {
       print(customExternalUserId);
     }

@@ -359,8 +359,7 @@ class _PermintaanKelilingState extends State<PermintaanKeliling> {
                                 color: Colors.blue,
                                 title: 'Ajukan',
                                 ontap: () {
-                                  Notif.roleNotification(
-                                      'Permintaan demo');
+                                  Notif.multiRoleNotification('ada permintaan demo baru', 'Admin');
                                   // if (_formKey.currentState.validate()) {
                                   //   PostResult.postApi(
                                   //     provinceId,
