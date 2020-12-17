@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,12 +14,13 @@ class Notif {
     sharedPreferences = await SharedPreferences.getInstance();
     final username = sharedPreferences.getString('username');
     final role = sharedPreferences.getString('role');
-    await OneSignal.shared.setExternalUserId(username);
-    await OneSignal.shared.sendTag('role', role);
-    print(username);
+    print('Notification' + role);
   }
 
-  static Future getNotification(String username, String message) async {
+  static Future usernameNotification(String username, String message) async {
+    SharedPreferences sharedPreferences;
+    sharedPreferences = await SharedPreferences.getInstance();
+    // final username = sharedPreferences.getString('username');
     final response = await http.post(notificationUrl,
         headers: {
           "Accept": "application/json",
@@ -39,11 +39,10 @@ class Notif {
     print(response.body);
   }
 
-  static Future roleNotification(String message) async {
+  static Future roleNotification(String role, String message) async {
     SharedPreferences sharedPreferences;
     sharedPreferences = await SharedPreferences.getInstance();
     final username = sharedPreferences.getString('username');
-    final role = sharedPreferences.getString('role');
     final response = await http.post(notificationUrl,
         headers: {
           "Accept": "application/json",
@@ -52,7 +51,6 @@ class Notif {
         },
         body: jsonEncode({
           "app_id": "956ae786-10ab-4d63-a9dd-82fb34904881",
-          "include_external_user_ids": [username],
           "channel_for_external_user_ids": "push",
           "tags": [
             {
@@ -83,9 +81,18 @@ class Notif {
         },
         body: jsonEncode({
           "app_id": "956ae786-10ab-4d63-a9dd-82fb34904881",
-          // "include_external_user_ids": role,
           "channel_for_external_user_ids": "push",
           "tags": [
+            {
+              "key": "role",
+              "relation": "=",
+              "value": role,
+            },
+            {
+              "key": "role",
+              "relation": "=",
+              "value": role,
+            },
             {
               "key": "role",
               "relation": "=",

@@ -18,12 +18,6 @@ class _RootState extends State<Root> {
     checkLoginStatus();
   }
 
-  logout() async {
-    sharedPreferences.clear();
-    sharedPreferences.commit();
-    await checkLoginStatus();
-  }
-
   checkLoginStatus() async {
     sharedPreferences = await SharedPreferences.getInstance();
     if (sharedPreferences.getString("token") == null) {

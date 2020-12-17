@@ -29,14 +29,14 @@ class NotificationScreenComponent extends StatelessWidget {
                 Text('•', style: TextStyle(color: Colors.grey[500])),
                 SizedBox(width: 5),
                 Text(DateFormat('d MMM y').format(date.toDate()),
-                    style: GoogleFonts.openSans(fontSize: 12, color: Colors.grey[500])),
+                    style: GoogleFonts.sourceSansPro(fontSize: 14, color: Colors.grey[500])),
               ],
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title ?? 'Ale', style: GoogleFonts.openSans(fontWeight: FontWeight.bold)),
-                Text(content ?? 'Ale', style: GoogleFonts.openSans(color: Colors.grey[500])),
+                Text(title ?? 'Ale', style: GoogleFonts.sourceSansPro(fontWeight: FontWeight.bold, fontSize: 16)),
+                Text(content ?? 'Ale', style: GoogleFonts.sourceSansPro(color: Colors.grey[500], fontSize: 16)),
               ],
             ),
             SizedBox(height: 10),

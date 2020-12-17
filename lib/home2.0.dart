@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Home2 extends StatefulWidget {
@@ -39,16 +40,6 @@ class _Home2State extends State<Home2> {
   void initState() {
     super.initState();
     checkLoginStatus();
-    dio();
-  }
-
-  Future dio() async {
-    SharedPreferences sharedPreferences;
-    sharedPreferences = await SharedPreferences.getInstance();
-    final token = sharedPreferences.getString('token');
-    final response = await Dio().get("http://192.168.0.7:4948/api/Employees/GetEmployeeSimple",
-        options: Options(headers: {"Authorization": "Bearer $token"}));
-    print(response.data["employeeAccounting"]);
   }
 
   checkLoginStatus() async {
@@ -63,6 +54,17 @@ class _Home2State extends State<Home2> {
         userRole = sharedPreferences.getString('role');
       });
       roleCheck();
+    }
+    if (userName != null) {
+      OneSignal.shared.setExternalUserId(userName);
+      print('Your external uid is ' + userName);
+    }
+    if (userRole != null) {
+      await OneSignal.shared.setSubscription(true);
+      await OneSignal.shared.sendTags({userRole: "all"});
+      Map<String, dynamic> tags = await OneSignal.shared.getTags();
+      print(tags);
+      print('Notification for $userRole is Active');
     }
   }
 
@@ -144,7 +146,7 @@ class _Home2State extends State<Home2> {
   }
 
   roleCheck() async {
-    if (userRole == 'Admin') {
+    if (userRole == 'Admin' || userRole == "Direktur") {
       setState(() {
         colors = Colors.blue;
         pengajuanDemo = true;
@@ -176,6 +178,16 @@ class _Home2State extends State<Home2> {
       peminjamanBarangGudang = false;
       cashierPage = false;
       technicianPage = true;
+    }
+    if (userRole == 'Kepala Teknisi') {
+      pengajuanDemo = false;
+      permintaanDemo = false;
+      penugasanDemo = true;
+      perjalananDemo = false;
+      peminjamanBarangDemo = false;
+      peminjamanBarangGudang = false;
+      cashierPage = false;
+      technicianPage = false;
     }
   }
 }

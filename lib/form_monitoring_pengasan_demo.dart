@@ -4,6 +4,7 @@ import 'package:atana/model/transport_model.dart';
 import 'package:atana/screen/pilih_teknisi.dart';
 import 'package:atana/service/api.dart';
 import 'package:atana/service/database.dart';
+import 'package:atana/service/notification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:dio/dio.dart';
@@ -433,6 +434,7 @@ class _DetailPagePenugasanDemoState extends State<DetailPagePenugasanDemo>
                               feeController.text,
                               feeController.text,
                               widget.selectedTech);
+                          Notif.roleNotification('Admin', "ada permintaan penugasan");
                         },
                         child: Container(
                           decoration: BoxDecoration(

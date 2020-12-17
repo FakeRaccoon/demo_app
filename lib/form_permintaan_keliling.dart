@@ -746,7 +746,6 @@ class _PermintaanKelilingState extends State<PermintaanKeliling> {
                     prefixIcon: Icon(Icons.search),
                     readOnly: false,
                     onchange: (String filter) {
-                      print(filter.length);
                       if (filter.length >= 2) {
                         setModalState(() {
                           API.getItems2(filter.toString().toLowerCase()).then((value) {

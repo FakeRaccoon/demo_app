@@ -6,6 +6,7 @@ import 'package:atana/service/notification.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 
@@ -101,9 +102,22 @@ class _LoginState extends State<Login> {
                       color: Colors.blue,
                       ontap: () {
                         if (_formKey.currentState.validate()) {
-                          print(usernameController.text);
-                          print(md5Convert());
-                          loginTest(usernameController.text, md5Convert());
+                          // print(usernameController.text);
+                          // print(md5Convert());
+                          // loginTest(usernameController.text, md5Convert());
+                          setState(() {
+                            _username = usernameController.text;
+                            _password = passController.text;
+                            _token = "jasndiyqwejnxac";
+                          });
+                          setUserInfoPreference()
+                              .then((value) => Center(child: CircularProgressIndicator()))
+                              .whenComplete(() {
+                            Notif.getOneSignal();
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (BuildContext context) => Body()),
+                                (Route<dynamic> route) => false);
+                          });
                         }
                       },
                     ),
@@ -136,8 +150,6 @@ class _LoginState extends State<Login> {
         setUserInfoPreference()
             .then((value) => Center(child: CircularProgressIndicator()))
             .whenComplete(() {
-          setUserInfoPreference();
-          Notif.getOneSignal();
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (BuildContext context) => Body()),
               (Route<dynamic> route) => false);
@@ -150,12 +162,15 @@ class _LoginState extends State<Login> {
 
   String _username;
   String _token;
+  String _password;
 
   Future<void> setUserInfoPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     prefs.setString('username', _username);
-    prefs.setString('token', _token);
-    prefs.setString('role', 'Admin');
+    prefs.setString('token',
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3VzZXJkYXRhIjoie1wiRW1wbG95ZWVJZFwiOjMwMTI0LjAsXCJFbXBsb3llZU5hbWVcIjpcImFiY1wiLFwiVXNlck5hbWVcIjpcIkFCQ1wiLFwiUGFzc3dvcmRcIjpcIjE2NjE3MzA2NTA2NDAwNjExOTAxODA4MlwiLFwiR3JvdXBVc2VyQ29kZVwiOlwiQURNSU5JU1RSQVRPUlwiLFwiUGFydG5lcklkXCI6bnVsbCxcIkF1dGhvclwiOlwiQnVpbHQtaW4gU3VwZXJ1c2VyXCJ9IiwibmJmIjoxNjA2ODk0NDkzLCJleHAiOjE2MDk0ODY0OTEsImlhdCI6MTYwNjg5NDQ5MywiaXNzIjoiaHR0cDovL0pUX0tBTlRPUjo0OTQ4LyIsImF1ZCI6Imh0dHA6Ly9KVF9LQU5UT1I6NDk0OC8ifQ.BbJubMXctAxuxwHT-KONV0uNql2jHS7alu3CssNYWDY");
+    // prefs.setString('token', _token);
+    prefs.setString('role', _password);
   }
 }

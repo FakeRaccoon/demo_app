@@ -43,6 +43,7 @@ class API {
       'Content-Type': 'application/json'
     });
     if (response.statusCode == 400) {
+      print(response.body);
       List json404 = [
         {"itemId": 1.0, "itemName": "400 bad request"}
       ];

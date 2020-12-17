@@ -62,6 +62,7 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(height: 5),
                         Row(
                           children: [
                             Text(
@@ -75,7 +76,7 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 5),
                         Expanded(
                           child: ListView.builder(
                             physics: BouncingScrollPhysics(),
@@ -172,8 +173,13 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                                 Expanded(
                                                   child: FlatButton(
                                                     onPressed: () {
-                                                      Notif.getNotification('ABC',
-                                                          'ABC, pengajuan demo barang ${snapshot.data.docs[index].data()['barang']} kamu sudah disetujui nih 😃');
+                                                      Get.defaultDialog(onConfirm: () {
+                                                        Notif.usernameNotification(
+                                                            snapshot.data.docs[index]
+                                                                .data()['sales_pengaju'],
+                                                            '${snapshot.data.docs[index].data()['sales_pengaju']}, pengajuan demo barang ${snapshot.data.docs[index].data()['barang']} kamu sudah disetujui nih 😃');
+                                                        Notif.roleNotification('Admin', "message");
+                                                      });
                                                     },
                                                     color: Colors.blue,
                                                     child: Text(
@@ -192,8 +198,20 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                                                 SizedBox(width: 20),
                                                 Expanded(
                                                   child: FlatButton(
-                                                    onPressed: () => Notif.getNotification('ABC',
-                                                        'ABC, pengajuan demo barang ${snapshot.data.docs[index].data()['barang']} anda di reject 😨'),
+                                                    onPressed: () {
+                                                      Get.defaultDialog(
+                                                          title: 'Alert',
+                                                          middleText: 'Apakah anda yakin?',
+                                                          textCancel: 'Batal',
+                                                          textConfirm: 'Ya',
+                                                          confirmTextColor: Colors.white,
+                                                          onConfirm: () {
+                                                            Notif.usernameNotification(
+                                                                snapshot.data.docs[index]
+                                                                    .data()['sales_pengaju'],
+                                                                '${snapshot.data.docs[index].data()['sales_pengaju']}, pengajuan demo barang ${snapshot.data.docs[index].data()['barang']} anda di reject 😨');
+                                                          });
+                                                    },
                                                     color: Colors.red,
                                                     child: Text(
                                                       'Reject',
@@ -247,6 +265,7 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(height: 5),
                         Row(
                           children: [
                             Text(
@@ -260,7 +279,7 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 5),
                         Expanded(
                           child: ListView.builder(
                             physics: BouncingScrollPhysics(),
@@ -420,6 +439,7 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(height: 5),
                         Row(
                           children: [
                             Text(
@@ -433,7 +453,7 @@ class _MonitoringDemoState extends State<MonitoringDemo> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 5),
                         Expanded(
                           child: ListView.builder(
                             physics: BouncingScrollPhysics(),
