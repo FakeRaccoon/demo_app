@@ -11,22 +11,18 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: ontap,
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            color: color),
-        height: 40,
-        width: double.infinity,
-        child: Center(
-          child: Text(
-            title,
-            style: GoogleFonts.openSans(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 14),
-          ),
+    return ButtonTheme(
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      minWidth: MediaQuery.of(context).size.width,
+      height: 40,
+      child: OutlineButton(
+        borderSide: BorderSide(color: color),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        onPressed: ontap,
+        child: Text(
+          title,
+          style: GoogleFonts.openSans(color: color, fontWeight: FontWeight.w700, fontSize: 14),
         ),
       ),
     );

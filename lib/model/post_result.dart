@@ -33,27 +33,18 @@ class PostResult {
     );
   }
 
-  static final url = 'https://service.indofarm.id/api/form/create';
+  static final url = 'http://10.0.2.2:8000/api/form/create';
   static final baseUrl = 'https://service.indofarm.id/api/form';
-  static Future<PostResult> postApi(
-      provinceId, cityId, districtId, itemId, reqDate, type) async {
-    final http.Response response = await http.post(url,
-        headers: {
-          'Content-Type': 'application/json',
-          'username': 'amt',
-          'password': 'kedungdoro',
-          'token': token
-        },
-        body: jsonEncode({
-          "province_id": provinceId,
-          "city_id": cityId,
-          "district_id": districtId,
-          "user_id": 1,
-          "item_id": itemId,
-          'request_date': reqDate,
-          "type": type,
-          "status": 1
-        }));
+  static Future postApi() async {
+    final http.Response response = await http.post(url, body: jsonEncode({
+      "province": "Jawa Timur",
+      "city": "Batu",
+      "item": "Dafeng",
+      "user": "Aliali",
+      "status": 3,
+      "type": 2,
+      "estimated_date": "2020-12-22 07:34:04"
+    }));
     if (response.statusCode == 201) {
       print(response.body);
     }
@@ -63,22 +54,13 @@ class PostResult {
     }
   }
 
-  static Future<List<PostResult>> getPostResult() async {
-    final response = await http.get(baseUrl, headers: {
-      'username': 'amt',
-      'password': 'kedungdoro',
-      'token': token,
-    });
+  static Future getPostResult() async {
+    final response = await http.get(baseUrl, headers: auth);
     if (response.statusCode == 200) {
       print('Ok');
-      // Map<String, dynamic> map = json.decode(response.body);
-      // List<dynamic> data = map["result"];
-      final Map parsed = json.decode(response.body);
-      var responseJson = json.decode(response.body);
-      return (responseJson['result'] as List)
-          .map((e) => PostResult.fromJson(e))
-          .toList();
-      // return provinceFromJson(response.body);
+      final decoded = jsonDecode(response.body);
+      List parsed = decoded['result'];
+      return parsed.map((e) => PostResult.fromJson(e)).toList();
     }
   }
 }

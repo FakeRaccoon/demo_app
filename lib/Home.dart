@@ -1,13 +1,12 @@
 import 'package:atana/component/customMenuCard.dart';
-import 'package:atana/form_monitoring_pengasan_demo.dart';
-import 'package:atana/form_monitoring_permintaan_demo.dart';
-import 'package:atana/form_permintaan_keliling.dart';
+import 'file:///C:/apps/atana/lib/model/AssignmentMonitoring.dart';
+import 'file:///C:/apps/atana/lib/screen/DemoRequestMonitoring.dart';
+import 'file:///C:/apps/atana/lib/screen/DemoRequest.dart';
 import 'package:atana/login.dart';
-import 'package:atana/perjalanan_demo.dart';
-import 'package:atana/screen/kasir.dart';
-import 'package:atana/screen/kepala_gudang.dart';
-import 'package:atana/screen/teknisi.dart';
-import 'package:dio/dio.dart';
+import 'file:///C:/apps/atana/lib/screen/DemoTripMonitoring.dart';
+import 'package:atana/screen/Cashier.dart';
+import 'package:atana/screen/Warehouse.dart';
+import 'package:atana/screen/Technician.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -15,12 +14,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Home2 extends StatefulWidget {
+
+class Home extends StatefulWidget {
   @override
-  _Home2State createState() => _Home2State();
+  _HomeState createState() => _HomeState();
 }
 
-class _Home2State extends State<Home2> {
+class _HomeState extends State<Home> {
   bool pengajuanDemo = false;
   bool permintaanDemo = false;
   bool penugasanDemo = false;
@@ -34,12 +34,20 @@ class _Home2State extends State<Home2> {
   String userToken;
   String userName;
 
+  bool isLoading;
+
   SharedPreferences sharedPreferences;
 
   @override
   void initState() {
     super.initState();
+    deleteTag();
     checkLoginStatus();
+  }
+
+  deleteTag() async {
+    await OneSignal.shared.setSubscription(true);
+    await OneSignal.shared.deleteTags(['role', 'username', 'test_key_1', 'test_key_2']);
   }
 
   checkLoginStatus() async {
@@ -65,6 +73,9 @@ class _Home2State extends State<Home2> {
       Map<String, dynamic> tags = await OneSignal.shared.getTags();
       print(tags);
       print('Notification for $userRole is Active');
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -106,7 +117,7 @@ class _Home2State extends State<Home2> {
                     color: pengajuanDemo == true ? Colors.blue : Colors.grey,
                     icon: FontAwesomeIcons.solidCopy,
                     title: 'Pengajuan Demo',
-                    ontap: () => pengajuanDemo == true ? Get.to(PermintaanKeliling()) : null),
+                    ontap: () => pengajuanDemo == true ? Get.to(DemoRequest()) : null),
                 CustomMenuCard(
                     color: permintaanDemo == true ? Colors.blue : Colors.grey,
                     icon: FontAwesomeIcons.userCheck,

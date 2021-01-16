@@ -1,53 +1,49 @@
 // To parse this JSON data, do
 //
-//     final userJson = userJsonFromJson(jsonString);
+//     final userResult = userResultFromJson(jsonString);
 
 import 'dart:convert';
 
-UserJson userJsonFromJson(String str) => UserJson.fromJson(json.decode(str));
+List<UserResult> userResultFromJson(String str) => List<UserResult>.from(json.decode(str).map((x) => UserResult.fromJson(x)));
 
-String userJsonToJson(UserJson data) => json.encode(data.toJson());
+String userResultToJson(List<UserResult> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class UserJson {
-  UserJson({
-    this.token,
+class UserResult {
+  UserResult({
+    this.id,
+    this.name,
+    this.username,
+    this.role,
+    this.selected,
+    this.createdAt,
+    this.updatedAt,
   });
 
-  Token token;
+  int id;
+  String name;
+  String username;
+  String role;
+  bool selected;
+  DateTime createdAt;
+  DateTime updatedAt;
 
-  factory UserJson.fromJson(Map<String, dynamic> json) => UserJson(
-    token: Token.fromJson(json["token"]),
+  factory UserResult.fromJson(Map<String, dynamic> json) => UserResult(
+    id: json["id"] == null ? null : json["id"],
+    name: json["name"] == null ? null : json["name"],
+    username: json["username"] == null ? null : json["username"],
+    role: json["role"] == null ? null : json["role"],
+    selected: json["selected"] == null ? null : json["selected"],
+    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
   );
 
   Map<String, dynamic> toJson() => {
-    "token": token.toJson(),
-  };
-}
-
-class Token {
-  Token({
-    this.tokenKey,
-    this.validFrom,
-    this.validTo,
-    this.userName,
-  });
-
-  String tokenKey;
-  DateTime validFrom;
-  DateTime validTo;
-  String userName;
-
-  factory Token.fromJson(Map<String, dynamic> json) => Token(
-    tokenKey: json["tokenKey"],
-    validFrom: DateTime.parse(json["validFrom"]),
-    validTo: DateTime.parse(json["validTo"]),
-    userName: json["userName"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "tokenKey": tokenKey,
-    "validFrom": validFrom.toIso8601String(),
-    "validTo": validTo.toIso8601String(),
-    "userName": userName,
+    "id": id == null ? null : id,
+    "name": name == null ? null : name,
+    "username": username == null ? null : username,
+    "role": role == null ? null : role,
+    "selected": selected == null ? null : selected,
+    "created_at": createdAt == null ? null : createdAt.toIso8601String(),
+    "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
   };
 }

@@ -1,6 +1,6 @@
-import 'package:atana/home2.0.dart';
+import 'package:atana/Home.dart';
 import 'package:atana/screen/notification.dart';
-import 'package:atana/screen/user_page.dart';
+import 'package:atana/screen/UserPage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -15,7 +15,7 @@ class _BodyState extends State<Body> {
 
   @override
   void initState() {
-    pageList.add(Home2());
+    pageList.add(Home());
     pageList.add(NotificationPage());
     pageList.add(UserPage());
     super.initState();

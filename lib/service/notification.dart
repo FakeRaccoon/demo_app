@@ -9,8 +9,10 @@ var notificationKey = "YjY1MmY2NTUtY2YwNC00OGRlLThkNTgtZmVkNGE0ODA0NmUz";
 String customExternalUserId = ("technician");
 
 class Notif {
+
+  static SharedPreferences sharedPreferences;
+
   static Future getOneSignal() async {
-    SharedPreferences sharedPreferences;
     sharedPreferences = await SharedPreferences.getInstance();
     final username = sharedPreferences.getString('username');
     final role = sharedPreferences.getString('role');
@@ -18,7 +20,6 @@ class Notif {
   }
 
   static Future usernameNotification(String username, String message) async {
-    SharedPreferences sharedPreferences;
     sharedPreferences = await SharedPreferences.getInstance();
     // final username = sharedPreferences.getString('username');
     final response = await http.post(notificationUrl,
@@ -40,23 +41,22 @@ class Notif {
   }
 
   static Future roleNotification(String role, String message) async {
-    SharedPreferences sharedPreferences;
     sharedPreferences = await SharedPreferences.getInstance();
     final username = sharedPreferences.getString('username');
     final response = await http.post(notificationUrl,
         headers: {
           "Accept": "application/json",
           "Content-Type": "application/json",
-          "Authorization": "BASIC " + notificationKey,
+          "Authorization": "Basic " + notificationKey,
         },
         body: jsonEncode({
           "app_id": "956ae786-10ab-4d63-a9dd-82fb34904881",
           "channel_for_external_user_ids": "push",
           "tags": [
             {
-              "key": "role",
+              "key": role,
               "relation": "=",
-              "value": role,
+              "value": "all",
             }
           ],
           "data": {"foo": "bar"},
@@ -72,7 +72,7 @@ class Notif {
     }
   }
 
-  static Future multiRoleNotification(String message, String role) async {
+  static Future multiRoleNotification(String message, String role_1, String role_2) async {
     final response = await http.post(notificationUrl,
         headers: {
           "Accept": "application/json",
@@ -82,28 +82,33 @@ class Notif {
         body: jsonEncode({
           "app_id": "956ae786-10ab-4d63-a9dd-82fb34904881",
           "channel_for_external_user_ids": "push",
-          "tags": [
+          "filters": [
             {
-              "key": "role",
+              "field": "tag",
+              "key": role_1,
               "relation": "=",
-              "value": role,
+              "value": "all"
             },
             {
-              "key": "role",
-              "relation": "=",
-              "value": role,
+              "operator": "OR"
             },
             {
-              "key": "role",
+              "field": "tag",
+              "key": role_2,
               "relation": "=",
-              "value": role,
+              "value": "all"
             }
           ],
-          "data": {"foo": "bar"},
-          "headings": {"en": "Notifikasi baru"},
-          "contents": {"en": message}
+          "data": {
+            "foo": "bar"
+          },
+          "headings": {
+            "en": "Ada notifikasi baru"
+          },
+          "contents": {
+            "en": message
+          }
         }));
-    print(role);
     if (response.statusCode == 200) {
       print(response.statusCode);
       print(response.body);

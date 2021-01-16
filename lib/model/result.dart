@@ -49,19 +49,52 @@ class DistrictResult {
   }
 }
 
-class ItemResult {
-  final String name;
-  final double id;
+class AssignedTechnician {
+  final int id;
+  final int formId;
+  final String technicianName;
+  final String task;
+  final DateTime depart;
+  final DateTime technicianReturn;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
-  ItemResult({
+  AssignedTechnician({
     this.id,
-    this.name,
+    this.formId,
+    this.technicianName,
+    this.task,
+    this.depart,
+    this.technicianReturn,
+    this.createdAt,
+    this.updatedAt,
   });
 
-  factory ItemResult.fromJson(Map<String, dynamic> json) {
-    return new ItemResult(
-      id: json['itemId'],
-      name: json['itemName'],
+  factory AssignedTechnician.fromJson(Map<String, dynamic> json) {
+    return new AssignedTechnician(
+      id: json['id'],
+      technicianName: json['technicianName'],
+      task: json['task'],
+    );
+  }
+}
+
+class TechnicianResult {
+  final String technician;
+  final int id;
+  final int assignmentId;
+
+  TechnicianResult({
+    this.assignmentId,
+    this.id,
+    this.technician,
+  });
+
+  factory TechnicianResult.fromJson(Map<String, dynamic> json) {
+    return new TechnicianResult(
+      id: json['id'],
+      assignmentId: json['assignment_id'],
+      technician: json['technician'],
     );
   }
 }
@@ -119,7 +152,7 @@ class WarehouseResult {
 
 class EmployeeResult {
   final String name;
-  final double id;
+  final int id;
 
   EmployeeResult({
     this.id,
@@ -128,8 +161,8 @@ class EmployeeResult {
 
   factory EmployeeResult.fromJson(Map<String, dynamic> json) {
     return new EmployeeResult(
-      id: json['employeeId'],
-      name: json['employeeName'],
+      id: json['id'],
+      name: json['user_name'],
     );
   }
 }

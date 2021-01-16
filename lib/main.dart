@@ -1,5 +1,5 @@
-import 'package:atana/form_monitoring_pengasan_demo.dart';
-import 'package:atana/form_monitoring_permintaan_demo.dart';
+import 'file:///C:/apps/atana/lib/model/AssignmentMonitoring.dart';
+import 'file:///C:/apps/atana/lib/screen/DemoRequestMonitoring.dart';
 import 'package:atana/root.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -21,6 +21,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      theme: ThemeData(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent
+      ),
       debugShowCheckedModeBanner: false,
       home: Root(),
     );

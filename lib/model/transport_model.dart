@@ -1,32 +1,37 @@
-class TransportModel {
-  final double id;
-  final String name;
+// To parse this JSON data, do
+//
+//     final transportResult = transportResultFromJson(jsonString);
 
-  TransportModel({this.id, this.name});
+import 'dart:convert';
 
-  factory TransportModel.fromJson(Map<String, dynamic> json) {
-    if (json == null) return null;
-    return TransportModel(
-      id: json["employeeId"],
-      name: json["employeeName"],
-    );
-  }
+List<TransportResult> transportResultFromJson(String str) => List<TransportResult>.from(json.decode(str).map((x) => TransportResult.fromJson(x)));
 
-  static List<TransportModel> fromJsonList(List list) {
-    if (list == null) return null;
-    return list.map((item) => TransportModel.fromJson(item)).toList();
-  }
+String transportResultToJson(List<TransportResult> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-  ///this method will prevent the override of toString
-  String userAsString() {
-    return '#${this.id} ${this.name}';
-  }
+class TransportResult {
+  TransportResult({
+    this.id,
+    this.name,
+    this.createdAt,
+    this.updatedAt,
+  });
 
-  ///this method will prevent the override of toString
-  bool userFilterByProvinceId(String filter) {
-    return this?.id?.toString()?.contains(filter);
-  }
+  int id;
+  String name;
+  DateTime createdAt;
+  DateTime updatedAt;
 
-  @override
-  String toString() => name;
+  factory TransportResult.fromJson(Map<String, dynamic> json) => TransportResult(
+    id: json["id"] == null ? null : json["id"],
+    name: json["name"] == null ? null : json["name"],
+    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id == null ? null : id,
+    "name": name == null ? null : name,
+    "created_at": createdAt == null ? null : createdAt.toIso8601String(),
+    "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
+  };
 }

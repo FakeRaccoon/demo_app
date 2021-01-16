@@ -41,7 +41,7 @@ class CustomTextField extends StatelessWidget {
           validator: validator,
           inputFormatters: inputformat,
           controller: controller,
-          readOnly: readOnly,
+          readOnly: readOnly ?? false,
           onTap: ontap,
           onChanged: onchange,
           keyboardType: keyboardtype,
