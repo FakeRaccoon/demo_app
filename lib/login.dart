@@ -42,12 +42,16 @@ class _LoginState extends State<Login> {
     }
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: Form(
           key: _key,
           child: SingleChildScrollView(
             child: Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               margin: EdgeInsets.all(20),
               elevation: 4,
               child: Padding(
@@ -89,27 +93,32 @@ class _LoginState extends State<Login> {
                           prefixIcon: Icon(Icons.lock),
                           suffixIcon: IconButton(
                             onPressed: _toggle,
-                            icon: isObscured == false
-                                ? Icon(Icons.visibility)
-                                : Icon(Icons.visibility_off),
+                            icon: isObscured == false ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
                           )),
                     ),
                     SizedBox(height: 20),
-                    CustomButton(
-                      title: 'Login',
-                      color: Colors.blue,
-                      ontap: () {
-                        if (_key.currentState.validate()) {
-                          // print(usernameController.text);
-                          // print(md5Convert());
-                          // loginTest(usernameController.text, md5Convert());
-                          loginTest(usernameController.text, passController.text);
-                          setUserInfoPreference().whenComplete(() {
-                            // Notif.getOneSignal();
-                          });
-                        }
-                      },
-                    ),
+                    ButtonTheme(
+                      minWidth: MediaQuery.of(context).size.width,
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      height: 40,
+                      child: FlatButton(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        onPressed: () {
+                          if (_key.currentState.validate()) {
+                            // print(usernameController.text);
+                            // print(md5Convert());
+                            // loginTest(usernameController.text, md5Convert());
+                            loginTest(usernameController.text, passController.text);
+                            setUserInfoPreference().whenComplete(() {
+                              // Notif.getOneSignal();
+                            });
+                          }
+                        },
+                        color: Colors.blue,
+                        child: Text('Login', style: GoogleFonts.sourceSansPro(color: Colors.white, fontWeight: FontWeight.bold),),
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -144,12 +153,9 @@ class _LoginState extends State<Login> {
         _token = data['token'];
         _role = data['role'];
         _name = data['name'];
-        setUserInfoPreference()
-            .then((value) => Center(child: CircularProgressIndicator()))
-            .whenComplete(() {
+        setUserInfoPreference().then((value) => Center(child: CircularProgressIndicator())).whenComplete(() {
           Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (BuildContext context) => Body()),
-              (Route<dynamic> route) => false);
+              MaterialPageRoute(builder: (BuildContext context) => Body()), (Route<dynamic> route) => false);
         });
       });
     } else {

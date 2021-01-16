@@ -157,7 +157,7 @@ class API {
     if (response.statusCode == 200) {
       var decode = jsonDecode(response.body);
       print(decode['result']);
-      final List<FormResult> form = formResultFromJson(jsonEncode(decode['result']));
+      final form = formResultFromJson(jsonEncode(decode['result']));
       return form;
     }
   }

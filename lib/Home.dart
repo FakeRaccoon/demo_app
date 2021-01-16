@@ -1,10 +1,10 @@
+import 'dart:convert';
+
 import 'package:atana/component/customMenuCard.dart';
-import 'file:///C:/apps/atana/lib/model/AssignmentMonitoring.dart';
-import 'file:///C:/apps/atana/lib/screen/DemoRequestMonitoring.dart';
-import 'file:///C:/apps/atana/lib/screen/DemoRequest.dart';
 import 'package:atana/login.dart';
-import 'file:///C:/apps/atana/lib/screen/DemoTripMonitoring.dart';
+import 'package:atana/screen/AssignmentMonitoring.dart';
 import 'package:atana/screen/Cashier.dart';
+import 'package:atana/screen/DemoRequestMonitoring.dart';
 import 'package:atana/screen/Warehouse.dart';
 import 'package:atana/screen/Technician.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +14,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'screen/DemoRequest.dart';
+import 'screen/DemoTripMonitoring.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -21,20 +23,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  bool pengajuanDemo = false;
-  bool permintaanDemo = false;
-  bool penugasanDemo = false;
-  bool perjalananDemo = false;
-  bool peminjamanBarangDemo = false;
-  bool peminjamanBarangGudang = false;
-  bool cashierPage = false;
-  bool technicianPage = false;
-  Color colors;
   String userRole;
   String userToken;
   String userName;
-
-  bool isLoading;
 
   SharedPreferences sharedPreferences;
 
@@ -54,8 +45,7 @@ class _HomeState extends State<Home> {
     sharedPreferences = await SharedPreferences.getInstance();
     if (sharedPreferences.getString("token") == null) {
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (BuildContext context) => Login()),
-          (Route<dynamic> route) => false);
+          MaterialPageRoute(builder: (BuildContext context) => Login()), (Route<dynamic> route) => false);
     } else {
       setState(() {
         userName = sharedPreferences.getString('username');
@@ -73,11 +63,11 @@ class _HomeState extends State<Home> {
       Map<String, dynamic> tags = await OneSignal.shared.getTags();
       print(tags);
       print('Notification for $userRole is Active');
-      setState(() {
-        isLoading = false;
-      });
+      setState(() {});
     }
   }
+
+  List<Widget> showWidgets = new List();
 
   @override
   Widget build(BuildContext context) {
@@ -89,116 +79,167 @@ class _HomeState extends State<Home> {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text('Hi, ',
-                          style: GoogleFonts.openSans(fontSize: 22, color: Colors.grey[500])),
-                      Text(sharedPreferences?.getString('username') ?? '',
-                          style: GoogleFonts.openSans(fontSize: 22)),
-                    ],
-                  ),
-                  Text(sharedPreferences?.getString('role') ?? '',
-                      style: GoogleFonts.openSans(fontSize: 14)),
-                ],
+            Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(topRight: Radius.circular(10), bottomRight: Radius.circular(40))),
+              elevation: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('Hi, ', style: GoogleFonts.sourceSansPro(fontSize: 22, color: Colors.grey[500])),
+                        Text(sharedPreferences?.getString('name') ?? '',
+                            style: GoogleFonts.sourceSansPro(fontSize: 22, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                    Text(sharedPreferences?.getString('role') ?? '', style: GoogleFonts.sourceSansPro(fontSize: 14)),
+                  ],
+                ),
               ),
             ),
-            SizedBox(height: 50),
-            GridView.count(
-              crossAxisCount: 3,
-              shrinkWrap: true,
-              children: [
-                CustomMenuCard(
-                    color: pengajuanDemo == true ? Colors.blue : Colors.grey,
-                    icon: FontAwesomeIcons.solidCopy,
-                    title: 'Pengajuan Demo',
-                    ontap: () => pengajuanDemo == true ? Get.to(DemoRequest()) : null),
-                CustomMenuCard(
-                    color: permintaanDemo == true ? Colors.blue : Colors.grey,
-                    icon: FontAwesomeIcons.userCheck,
-                    title: 'Monitoring Permintaan Demo',
-                    ontap: () => permintaanDemo == true ? Get.to(MonitoringDemo()) : null),
-                CustomMenuCard(
-                    color: penugasanDemo == true ? Colors.blue : Colors.grey,
-                    icon: FontAwesomeIcons.chalkboardTeacher,
-                    title: 'Monitoring Penugasan Demo',
-                    ontap: () => penugasanDemo == true ? Get.to(MonitoringPenugasa()) : null),
-                CustomMenuCard(
-                    color: perjalananDemo == true ? Colors.blue : Colors.grey,
-                    icon: FontAwesomeIcons.truck,
-                    title: 'Perjalanan Demo',
-                    ontap: () => perjalananDemo == true ? Get.to(PerjalananDemo()) : null),
-                CustomMenuCard(
-                    color: peminjamanBarangDemo == true ? Colors.blue : Colors.grey,
-                    icon: FontAwesomeIcons.peopleCarry,
-                    title: 'Peminjaman Barang',
-                    ontap: () => peminjamanBarangDemo == true ? Get.to(Warehouse()) : null),
-                CustomMenuCard(
-                    color: cashierPage == true ? Colors.blue : Colors.grey,
-                    icon: FontAwesomeIcons.solidMoneyBillAlt,
-                    title: 'Kasir',
-                    ontap: () => cashierPage == true ? Get.to(Cashier()) : null),
-                CustomMenuCard(
-                    color: technicianPage == true ? Colors.blue : Colors.grey,
-                    icon: FontAwesomeIcons.wrench,
-                    title: 'Teknisi',
-                    ontap: () => technicianPage == true ? Get.to(Technician()) : null),
-              ],
-            )
+            SizedBox(height: 20),
+            userRole != 'Sales'
+                ? SizedBox()
+                : Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Card(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      color: Colors.blue,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: ListTile(
+                          leading: FaIcon(
+                            FontAwesomeIcons.solidCopy,
+                            color: Colors.white,
+                          ),
+                          title: Text(
+                            'Pengajuan demo',
+                            style: GoogleFonts.sourceSansPro(
+                                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
+                          ),
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 25,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+            userName != 'kasir'
+                ? SizedBox()
+                : Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Card(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      color: Colors.blue,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: ListTile(
+                          leading: FaIcon(
+                            FontAwesomeIcons.moneyBill,
+                            color: Colors.white,
+                          ),
+                          title: Text(
+                            'Kasir',
+                            style: GoogleFonts.sourceSansPro(
+                                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
+                          ),
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 25,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+            userName != 'teknisi'
+                ? SizedBox()
+                : Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Card(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      color: Colors.blue,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: ListTile(
+                          leading: FaIcon(
+                            FontAwesomeIcons.wrench,
+                            color: Colors.white,
+                          ),
+                          title: Text(
+                            'Teknisi',
+                            style: GoogleFonts.sourceSansPro(
+                                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
+                          ),
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 25,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+            if (showWidgets.isEmpty)
+              SizedBox()
+            else
+              Column(
+                children: [
+                  SizedBox(height: 20),
+                  GridView.count(
+                    primary: false,
+                    crossAxisCount: 3,
+                    shrinkWrap: true,
+                    children: showWidgets,
+                  ),
+                ],
+              ),
           ],
         ),
       ),
     );
   }
 
-  roleCheck() async {
+  Future roleCheck() async {
     if (userRole == 'Admin' || userRole == "Direktur") {
-      setState(() {
-        colors = Colors.blue;
-        pengajuanDemo = true;
-        permintaanDemo = true;
-        penugasanDemo = true;
-        perjalananDemo = true;
-        peminjamanBarangDemo = true;
-        peminjamanBarangGudang = true;
-        cashierPage = true;
-        technicianPage = true;
-      });
-    }
-    if (userRole == 'Kasir') {
-      pengajuanDemo = false;
-      permintaanDemo = false;
-      penugasanDemo = false;
-      perjalananDemo = false;
-      peminjamanBarangDemo = false;
-      peminjamanBarangGudang = false;
-      cashierPage = true;
-      technicianPage = false;
-    }
-    if (userRole == 'Teknisi') {
-      pengajuanDemo = false;
-      permintaanDemo = false;
-      penugasanDemo = false;
-      perjalananDemo = false;
-      peminjamanBarangDemo = false;
-      peminjamanBarangGudang = false;
-      cashierPage = false;
-      technicianPage = true;
-    }
-    if (userRole == 'Kepala Teknisi') {
-      pengajuanDemo = false;
-      permintaanDemo = false;
-      penugasanDemo = true;
-      perjalananDemo = false;
-      peminjamanBarangDemo = false;
-      peminjamanBarangGudang = false;
-      cashierPage = false;
-      technicianPage = false;
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue,
+          icon: FontAwesomeIcons.solidCopy,
+          title: 'Pengajuan Demo',
+          ontap: () => Get.to(DemoRequest())));
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue,
+          icon: FontAwesomeIcons.userCheck,
+          title: 'Monitoring Permintaan Demo',
+          ontap: () => Get.to(MonitoringDemo())));
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue,
+          icon: FontAwesomeIcons.chalkboardTeacher,
+          title: 'Monitoring Penugasan Demo',
+          ontap: () => Get.to(MonitoringPenugasa())));
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue,
+          icon: FontAwesomeIcons.truck,
+          title: 'Perjalanan Demo',
+          ontap: () => Get.to(DemoTripMonitoring())));
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue,
+          icon: FontAwesomeIcons.box,
+          title: 'Peminjaman Barang',
+          ontap: () => Get.to(Warehouse())));
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue, icon: FontAwesomeIcons.moneyBill, title: 'kasir', ontap: () => Get.to(Cashier())));
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue, icon: FontAwesomeIcons.wrench, title: 'Teknisi', ontap: () => Get.to(Technician())));
+      print(showWidgets);
     }
   }
 }
