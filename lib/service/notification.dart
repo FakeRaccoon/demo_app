@@ -9,7 +9,6 @@ var notificationKey = "YjY1MmY2NTUtY2YwNC00OGRlLThkNTgtZmVkNGE0ODA0NmUz";
 String customExternalUserId = ("technician");
 
 class Notif {
-
   static SharedPreferences sharedPreferences;
 
   static Future getOneSignal() async {
@@ -33,7 +32,7 @@ class Notif {
           "include_external_user_ids": [username],
           "channel_for_external_user_ids": "push",
           "data": {"foo": "bar"},
-          "headings": {"en": "Notifikasi baru buat kamu nih"},
+          "headings": {"en": "Notifikasi baru"},
           "contents": {"en": message}
         }));
     print(response.statusCode);
@@ -72,43 +71,29 @@ class Notif {
     }
   }
 
-  static Future multiRoleNotification(String message, String role_1, String role_2) async {
-    final response = await http.post(notificationUrl,
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-          "Authorization": "BASIC " + notificationKey,
-        },
-        body: jsonEncode({
+  static Future multiRoleNotification(String message, String role1, String role2) async {
+    final response = await http.post(
+      notificationUrl,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "BASIC " + notificationKey,
+      },
+      body: jsonEncode(
+        {
           "app_id": "956ae786-10ab-4d63-a9dd-82fb34904881",
           "channel_for_external_user_ids": "push",
           "filters": [
-            {
-              "field": "tag",
-              "key": role_1,
-              "relation": "=",
-              "value": "all"
-            },
-            {
-              "operator": "OR"
-            },
-            {
-              "field": "tag",
-              "key": role_2,
-              "relation": "=",
-              "value": "all"
-            }
+            {"field": "tag", "key": role1, "relation": "=", "value": "all"},
+            {"operator": "OR"},
+            {"field": "tag", "key": role2, "relation": "=", "value": "all"}
           ],
-          "data": {
-            "foo": "bar"
-          },
-          "headings": {
-            "en": "Ada notifikasi baru"
-          },
-          "contents": {
-            "en": message
-          }
-        }));
+          "data": {"foo": "bar"},
+          "headings": {"en": "Ada notifikasi baru"},
+          "contents": {"en": "Ada notifikasi baru nich"},
+        },
+      ),
+    );
     if (response.statusCode == 200) {
       print(response.statusCode);
       print(response.body);

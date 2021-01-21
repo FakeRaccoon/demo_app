@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:atana/component/customMenuCard.dart';
 import 'package:atana/login.dart';
 import 'package:atana/screen/AssignmentMonitoring.dart';
@@ -8,6 +6,7 @@ import 'package:atana/screen/DemoRequestMonitoring.dart';
 import 'package:atana/screen/Warehouse.dart';
 import 'package:atana/screen/Technician.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -219,12 +218,12 @@ class _HomeState extends State<Home> {
           color: Colors.blue,
           icon: FontAwesomeIcons.userCheck,
           title: 'Monitoring Permintaan Demo',
-          ontap: () => Get.to(MonitoringDemo())));
+          ontap: () => Get.to(DemoRequestMonitoring())));
       showWidgets.add(CustomMenuCard(
           color: Colors.blue,
           icon: FontAwesomeIcons.chalkboardTeacher,
           title: 'Monitoring Penugasan Demo',
-          ontap: () => Get.to(MonitoringPenugasa())));
+          ontap: () => Get.to(DemoAssignmentMonitoring())));
       showWidgets.add(CustomMenuCard(
           color: Colors.blue,
           icon: FontAwesomeIcons.truck,

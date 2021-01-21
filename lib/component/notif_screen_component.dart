@@ -9,8 +9,7 @@ class NotificationScreenComponent extends StatelessWidget {
   final Timestamp date;
   final colors;
 
-  const NotificationScreenComponent({Key key, this.title, this.content, this.colors, this.date})
-      : super(key: key);
+  const NotificationScreenComponent({Key key, this.title, this.content, this.colors, this.date}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +35,12 @@ class NotificationScreenComponent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title ?? 'Ale', style: GoogleFonts.sourceSansPro(fontWeight: FontWeight.bold, fontSize: 16)),
-                Text(content ?? 'Ale', style: GoogleFonts.sourceSansPro(color: Colors.grey[500], fontSize: 16)),
+                Text(
+                  content ?? 'Ale',
+                  style: GoogleFonts.sourceSansPro(color: Colors.grey[500], fontSize: 16),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
               ],
             ),
             SizedBox(height: 10),

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:atana/body.dart';
-import 'package:atana/component/button.dart';
+import 'package:atana/component/CustomOutlineButton.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

@@ -15,6 +15,7 @@ class CustomTextField extends StatelessWidget {
   final bool autofocus;
   final labelText;
   final validator;
+  final onSaved;
 
   const CustomTextField(
       {Key key,
@@ -29,7 +30,7 @@ class CustomTextField extends StatelessWidget {
       this.prefix,
       this.prefixIcon,
       this.customHeight,
-      this.autofocus, this.labelText, this.validator})
+      this.autofocus, this.labelText, this.validator, this.onSaved})
       : super(key: key);
 
   @override
@@ -38,6 +39,7 @@ class CustomTextField extends StatelessWidget {
       padding: const EdgeInsets.only(left: 15, right: 10),
       child: Center(
         child: TextFormField(
+          onSaved: onSaved,
           validator: validator,
           inputFormatters: inputformat,
           controller: controller,

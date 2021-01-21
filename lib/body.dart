@@ -1,8 +1,12 @@
 import 'package:atana/Home.dart';
 import 'package:atana/screen/notification.dart';
 import 'package:atana/screen/UserPage.dart';
+import 'package:badges/badges.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Body extends StatefulWidget {
   @override
@@ -13,13 +17,28 @@ class _BodyState extends State<Body> {
   int selectedPage = 0;
   List<Widget> pageList = List<Widget>();
 
+  SharedPreferences sharedPreferences;
+
   @override
   void initState() {
     pageList.add(Home());
     pageList.add(NotificationPage());
     pageList.add(UserPage());
     super.initState();
+    getSharedPref();
   }
+
+  Future getSharedPref() async {
+    sharedPreferences = await SharedPreferences.getInstance();
+    final getUsername = sharedPreferences.getString('username');
+    if (getUsername != null) {
+      setState(() {
+        username = getUsername;
+      });
+    }
+  }
+
+  String username;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +55,29 @@ class _BodyState extends State<Body> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: FaIcon(FontAwesomeIcons.solidBell),
+            icon: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('Users')
+                  .doc(username)
+                  .collection('notifications')
+                  .where('read', isEqualTo: false)
+                  .snapshots(),
+              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return FaIcon(FontAwesomeIcons.solidBell);
+                }
+                if (snapshot.data.docs.length == 0 || snapshot.data == null) {
+                  return FaIcon(FontAwesomeIcons.solidBell);
+                }
+                return Badge(
+                  badgeContent: Text(
+                    snapshot.data.docs.length.toString(),
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  child: FaIcon(FontAwesomeIcons.solidBell),
+                );
+              },
+            ),
             label: 'Notifikasi',
           ),
           BottomNavigationBarItem(
@@ -54,6 +95,18 @@ class _BodyState extends State<Body> {
   void onItemTapped(int index) {
     setState(() {
       selectedPage = index;
+      if (selectedPage == 0) {
+        FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
+        FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+      }
+      if (selectedPage == 1) {
+        FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
+        FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+      }
+      if (selectedPage == 2) {
+        FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
+        FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+      }
     });
   }
 }

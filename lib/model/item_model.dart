@@ -1,3 +1,29 @@
+// // To parse this JSON data, do
+// //
+// //     final itemResult = itemResultFromJson(jsonString);
+//
+// import 'dart:convert';
+//
+// class ItemResult {
+//   ItemResult({
+//     this.id,
+//     this.atanaItemId,
+//     this.atanaName,
+//     this.atanaAlias,
+//   });
+//
+//   int id;
+//   int atanaItemId;
+//   String atanaName;
+//   String atanaAlias;
+//
+//   factory ItemResult.fromJson(Map<String, dynamic> json) => ItemResult(
+//     id: json["id"] == null ? null : json["id"] as int,
+//     atanaItemId: json["atanaItemId"] == null ? null : json["atanaItemId"] as int,
+//     atanaName: json["atanaName"] == null ? null : json["atanaName"] as String,
+//     atanaAlias: json["atanaAlias"] == null ? null : json["atanaAlias"] as String,
+//   );
+// }
 // To parse this JSON data, do
 //
 //     final itemResult = itemResultFromJson(jsonString);

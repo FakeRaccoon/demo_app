@@ -14,8 +14,8 @@ class TechnicianTaskResult {
     this.formId,
     this.name,
     this.task,
-    this.depart,
-    this.technicianTaskResultReturn,
+    this.departDate,
+    this.returnDate,
     this.confirmed,
     this.createdAt,
     this.updatedAt,
@@ -25,8 +25,8 @@ class TechnicianTaskResult {
   int formId;
   String name;
   String task;
-  DateTime depart;
-  DateTime technicianTaskResultReturn;
+  DateTime departDate;
+  DateTime returnDate;
   bool confirmed;
   DateTime createdAt;
   DateTime updatedAt;
@@ -36,8 +36,8 @@ class TechnicianTaskResult {
     formId: json["form_id"] == null ? null : json["form_id"],
     name: json["name"] == null ? null : json["name"],
     task: json["task"] == null ? null : json["task"],
-    depart: json["depart"] == null ? null : DateTime.parse(json["depart"]),
-    technicianTaskResultReturn: json["return"] == null ? null : DateTime.parse(json["return"]),
+    departDate: json["depart"] == null ? null : DateTime.parse(json["depart"]),
+    returnDate: json["return"] == null ? null : DateTime.parse(json["return"]),
     confirmed: json["confirmed"] == null ? null : json["confirmed"],
     createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
     updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
@@ -48,8 +48,8 @@ class TechnicianTaskResult {
     "form_id": formId == null ? null : formId,
     "name": name == null ? null : name,
     "task": task == null ? null : task,
-    "depart": depart == null ? null : depart.toIso8601String(),
-    "return": technicianTaskResultReturn == null ? null : technicianTaskResultReturn.toIso8601String(),
+    "depart": departDate == null ? null : departDate.toIso8601String(),
+    "return": returnDate == null ? null : returnDate.toIso8601String(),
     "confirmed": confirmed == null ? null : confirmed,
     "created_at": createdAt == null ? null : createdAt.toIso8601String(),
     "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),

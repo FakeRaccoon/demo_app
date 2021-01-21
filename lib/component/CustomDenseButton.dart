@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class CustomButton extends StatelessWidget {
+class CustomDenseButton extends StatelessWidget {
   final String title;
-  final ontap;
+  final onTap;
   final color;
 
-  const CustomButton({Key key, this.title, this.ontap, this.color}) : super(key: key);
+  const CustomDenseButton({Key key, this.title, this.onTap, this.color}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +16,13 @@ class CustomButton extends StatelessWidget {
       highlightColor: Colors.transparent,
       minWidth: MediaQuery.of(context).size.width,
       height: 40,
-      child: OutlineButton(
-        borderSide: BorderSide(color: color),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        onPressed: ontap,
+      child: FlatButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        color: color,
+        onPressed: onTap,
         child: Text(
           title,
-          style: GoogleFonts.openSans(color: color, fontWeight: FontWeight.w700, fontSize: 14),
+          style: GoogleFonts.openSans(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14),
         ),
       ),
     );

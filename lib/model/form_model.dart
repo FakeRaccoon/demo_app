@@ -26,8 +26,6 @@ class FormResult {
     this.image,
     this.departureDate,
     this.returnDate,
-    this.createdAt,
-    this.updatedAt,
   });
 
   int id;
@@ -46,8 +44,6 @@ class FormResult {
   String image;
   DateTime departureDate;
   DateTime returnDate;
-  DateTime createdAt;
-  DateTime updatedAt;
 
   factory FormResult.fromJson(Map<String, dynamic> json) => FormResult(
     id: json["id"] == null ? null : json["id"],
@@ -66,8 +62,6 @@ class FormResult {
     image: json["image"] == null ? null : json["image"],
     departureDate: json["departure_date"] == null ? null : DateTime.parse(json["departure_date"]),
     returnDate: json["return_date"] == null ? null : DateTime.parse(json["return_date"]),
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -87,8 +81,6 @@ class FormResult {
     "image": image == null ? null : image,
     "departure_date": departureDate == null ? null : departureDate.toIso8601String(),
     "return_date": returnDate == null ? null : returnDate.toIso8601String(),
-    "created_at": createdAt == null ? null : createdAt.toIso8601String(),
-    "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
   };
 }
 
