@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:atana/model/COA.dart';
 import 'package:atana/model/WAREHOUSE.dart';
+import 'package:atana/model/atana_item_model.dart';
 import 'package:atana/model/city_model.dart';
 import 'package:atana/model/district_model.dart';
 import 'package:atana/model/form_model.dart';
@@ -44,43 +45,43 @@ class API {
   }
 
   static Future getItems(search) async {
-    // final String url = "http://192.168.0.7:4948/api/Items/ProductDropDown";
+    final String url = "http://192.168.0.250:5050/api/Items/ProductDropDown";
     final String localUrl = "http://10.0.2.2:8000/api/item";
     sharedPreferences = await SharedPreferences.getInstance();
     final token = sharedPreferences.getString('token');
-    final Response response = await Dio().get(localUrl,
-        options: Options(headers: {
-          'search': search,
-          'Authorization': "Bearer $token",
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }));
-    if (response.statusCode == 200) {
-      final item = itemResultFromJson(jsonEncode(response.data['result']));
-      return item;
-    }
-    // try {
-    //   final atanaResponse = await Dio().post(atanaUrl,
-    //       options: Options(headers: {
-    //         "username": "FLUTTERAPPS",
-    //         "password": "a0d2f3a1ebdcf8681c5fd16f3d28a9cc",
-    //       }));
-    //   if (atanaResponse.statusCode == 200) {
-    //     final Response response = await Dio().get(localUrl,
-    //         options: Options(headers: {
-    //           'search': search,
-    //           'Authorization': "Bearer $token",
-    //           'Accept': 'application/json',
-    //           'Content-Type': 'application/json'
-    //         }));
-    //     if (response.statusCode == 200) {
-    //       final item = itemResultFromJson(jsonEncode(response.data['result']));
-    //       return item;
-    //     }
-    //   }
-    // } catch (e) {
-    //   print(e);
+    // final Response response = await Dio().get(localUrl,
+    //     options: Options(headers: {
+    //       'search': search,
+    //       'Authorization': "Bearer $token",
+    //       'Accept': 'application/json',
+    //       'Content-Type': 'application/json'
+    //     }));
+    // if (response.statusCode == 200) {
+    //   final item = itemResultFromJson(jsonEncode(response.data['result']));
+    //   return item;
     // }
+    try {
+      final atanaResponse = await Dio().post(atanaUrl,
+          options: Options(headers: {
+            "username": "FLUTTERAPPS",
+            "password": "a0d2f3a1ebdcf8681c5fd16f3d28a9cc",
+          }));
+      if (atanaResponse.statusCode == 200) {
+        var atanaToken = atanaResponse.data['token']['tokenKey'];
+        final response = await Dio().get(url,
+            options: Options(headers: {
+              'search': search,
+              'Authorization': "Bearer $atanaToken",
+            }));
+        if (response.statusCode == 200) {
+          print(response.data);
+          final item = atanaItemResultFromJson(jsonEncode(response.data));
+          return item;
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   static Future createForm(provinceId, cityId, districtId, item, type, date) async {
@@ -97,7 +98,7 @@ class API {
             "province_id": provinceId,
             "city_id": cityId,
             "district_id": districtId,
-            "item_id": item,
+            "item": item,
             "user_id": salesId,
             "status": 1,
             "type": type,

@@ -1,5 +1,5 @@
 import 'package:atana/Home.dart';
-import 'package:atana/screen/notification.dart';
+import 'package:atana/screen/NotificationScreen.dart';
 import 'package:atana/screen/UserPage.dart';
 import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -32,10 +32,10 @@ class _BodyState extends State<Body> {
 
   Future getSharedPref() async {
     sharedPreferences = await SharedPreferences.getInstance();
-    final getUsername = sharedPreferences.getString('username');
-    if (getUsername != null) {
+    final getName = sharedPreferences.getString('name');
+    if (getName != null) {
       setState(() {
-        username = getUsername;
+        username = getName;
       });
     }
   }

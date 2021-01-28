@@ -35,7 +35,7 @@ class FormResult {
   City city;
   City district;
   User user;
-  Item item;
+  String item;
   List<Fee> fee;
   City transport;
   Driver driver;
@@ -55,7 +55,7 @@ class FormResult {
     city: json["city"] == null ? null : City.fromJson(json["city"]),
     district: json["district"] == null ? null : City.fromJson(json["district"]),
     user: json["user"] == null ? null : User.fromJson(json["user"]),
-    item: json["item"] == null ? null : Item.fromJson(json["item"]),
+    item: json["item"] == null ? null : json["item"],
     fee: json["fee"] == null ? null : List<Fee>.from(json["fee"].map((x) => Fee.fromJson(x))),
     transport: json["transport"] == null ? null : City.fromJson(json["transport"]),
     driver: json["driver"] == null ? null : Driver.fromJson(json["driver"]),
@@ -76,7 +76,7 @@ class FormResult {
     "city": city == null ? null : city.toJson(),
     "district": district == null ? null : district.toJson(),
     "user": user == null ? null : user.toJson(),
-    "item": item == null ? null : item.toJson(),
+    "item": item == null ? null : item,
     "fee": fee == null ? null : List<dynamic>.from(fee.map((x) => x.toJson())),
     "transport": transport == null ? null : transport.toJson(),
     "driver": driver == null ? null : driver.toJson(),
@@ -213,66 +213,6 @@ class Fee {
     "description": description == null ? null : description,
     "created_at": createdAt == null ? null : createdAt.toIso8601String(),
     "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
-  };
-}
-
-class Item {
-  Item({
-    this.id,
-    this.atanaItemId,
-    this.atanaName,
-    this.atanaAlias,
-    this.atanaWeight,
-    this.atanaPrice,
-    this.atanaStock,
-    this.atanaCurrencyId,
-    this.atanaCurrencyName,
-    this.atanaKurs,
-    this.atanaDate,
-    this.atanaUpdate,
-  });
-
-  int id;
-  int atanaItemId;
-  String atanaName;
-  String atanaAlias;
-  dynamic atanaWeight;
-  dynamic atanaPrice;
-  dynamic atanaStock;
-  dynamic atanaCurrencyId;
-  dynamic atanaCurrencyName;
-  dynamic atanaKurs;
-  DateTime atanaDate;
-  DateTime atanaUpdate;
-
-  factory Item.fromJson(Map<String, dynamic> json) => Item(
-    id: json["id"] == null ? null : json["id"],
-    atanaItemId: json["atanaItemId"] == null ? null : json["atanaItemId"],
-    atanaName: json["atanaName"] == null ? null : json["atanaName"],
-    atanaAlias: json["atanaAlias"] == null ? null : json["atanaAlias"],
-    atanaWeight: json["atanaWeight"] == null ? null : json["atanaWeight"],
-    atanaPrice: json["atanaPrice"] == null ? null : json["atanaPrice"],
-    atanaStock: json["atanaStock"] == null ? null : json["atanaStock"],
-    atanaCurrencyId: json["atanaCurrencyId"] == null ? null : json["atanaCurrencyId"],
-    atanaCurrencyName: json["atanaCurrencyName"] == null ? null : json["atanaCurrencyName"],
-    atanaKurs: json["atanaKurs"] == null ? null : json["atanaKurs"],
-    atanaDate: json["atanaDate"] == null ? null : DateTime.parse(json["atanaDate"]),
-    atanaUpdate: json["atanaUpdate"] == null ? null : DateTime.parse(json["atanaUpdate"]),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "id": id == null ? null : id,
-    "atanaItemId": atanaItemId == null ? null : atanaItemId,
-    "atanaName": atanaName == null ? null : atanaName,
-    "atanaAlias": atanaAlias == null ? null : atanaAlias,
-    "atanaWeight": atanaWeight == null ? null : atanaWeight,
-    "atanaPrice": atanaPrice == null ? null : atanaPrice,
-    "atanaStock": atanaStock == null ? null : atanaStock,
-    "atanaCurrencyId": atanaCurrencyId == null ? null : atanaCurrencyId,
-    "atanaCurrencyName": atanaCurrencyName == null ? null : atanaCurrencyName,
-    "atanaKurs": atanaKurs == null ? null : atanaKurs,
-    "atanaDate": atanaDate == null ? null : atanaDate.toIso8601String(),
-    "atanaUpdate": atanaUpdate == null ? null : atanaUpdate.toIso8601String(),
   };
 }
 

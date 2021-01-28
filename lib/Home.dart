@@ -50,7 +50,7 @@ class _HomeState extends State<Home> {
     } else {
       setState(() {
         print(sharedPreferences.getString('atanaToken'));
-        userName = sharedPreferences.getString('username');
+        userName = sharedPreferences.getString('name');
         userRole = sharedPreferences.getString('role');
       });
       roleCheck();
