@@ -25,6 +25,8 @@ class _BodyState extends State<Body> {
     pageList.add(NotificationPage());
     pageList.add(UserPage());
     super.initState();
+    FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
     getSharedPref();
   }
 

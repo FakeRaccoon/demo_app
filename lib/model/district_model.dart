@@ -1,43 +1,15 @@
 // To parse this JSON data, do
 //
-//     final district = districtFromJson(jsonString);
+//     final districtResult = districtResultFromJson(jsonString);
 
 import 'dart:convert';
 
-District districtFromJson(String str) => District.fromJson(json.decode(str));
+List<DistrictResult> districtResultFromJson(String str) => List<DistrictResult>.from(json.decode(str).map((x) => DistrictResult.fromJson(x)));
 
-String districtToJson(District data) => json.encode(data.toJson());
+String districtResultToJson(List<DistrictResult> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class District {
-  District({
-    this.status,
-    this.message,
-    this.totalData,
-    this.result,
-  });
-
-  int status;
-  String message;
-  int totalData;
-  List<Result> result;
-
-  factory District.fromJson(Map<String, dynamic> json) => District(
-    status: json["status"],
-    message: json["message"],
-    totalData: json["total_data"],
-    result: List<Result>.from(json["result"].map((x) => Result.fromJson(x))),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "status": status,
-    "message": message,
-    "total_data": totalData,
-    "result": List<dynamic>.from(result.map((x) => x.toJson())),
-  };
-}
-
-class Result {
-  Result({
+class DistrictResult {
+  DistrictResult({
     this.id,
     this.cityId,
     this.name,
@@ -46,24 +18,24 @@ class Result {
   });
 
   int id;
-  String cityId;
+  int cityId;
   String name;
   DateTime createdAt;
   DateTime updatedAt;
 
-  factory Result.fromJson(Map<String, dynamic> json) => Result(
-    id: json["id"],
-    cityId: json["city_id"],
-    name: json["name"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
+  factory DistrictResult.fromJson(Map<String, dynamic> json) => DistrictResult(
+    id: json["id"] == null ? null : json["id"],
+    cityId: json["city_id"] == null ? null : json["city_id"],
+    name: json["name"] == null ? null : json["name"],
+    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
   );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "city_id": cityId,
-    "name": name,
-    "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
+    "id": id == null ? null : id,
+    "city_id": cityId == null ? null : cityId,
+    "name": name == null ? null : name,
+    "created_at": createdAt == null ? null : createdAt.toIso8601String(),
+    "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
   };
 }

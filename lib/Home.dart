@@ -3,6 +3,8 @@ import 'package:atana/login.dart';
 import 'package:atana/screen/AssignmentMonitoring.dart';
 import 'package:atana/screen/Cashier.dart';
 import 'package:atana/screen/DemoRequestMonitoring.dart';
+import 'package:atana/screen/RoleAssignment.dart';
+import 'package:atana/screen/VehicleInput.dart';
 import 'package:atana/screen/Warehouse.dart';
 import 'package:atana/screen/Technician.dart';
 import 'package:flutter/material.dart';
@@ -47,10 +49,12 @@ class _HomeState extends State<Home> {
           MaterialPageRoute(builder: (BuildContext context) => Login()), (Route<dynamic> route) => false);
     } else {
       setState(() {
+        print(sharedPreferences.getString('atanaToken'));
         userName = sharedPreferences.getString('username');
         userRole = sharedPreferences.getString('role');
       });
       roleCheck();
+      superuser();
     }
     if (userName != null) {
       OneSignal.shared.setExternalUserId(userName);
@@ -205,6 +209,50 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
+  }
+
+  Future superuser() async {
+    if (userRole == 'Superuser') {
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue,
+          icon: FontAwesomeIcons.personBooth,
+          title: 'User Management',
+          ontap: () => Get.to(UserManagement())));
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue,
+          icon: FontAwesomeIcons.truck,
+          title: 'Vehicle Management',
+          ontap: () => Get.to(VehicleInput())));
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue,
+          icon: FontAwesomeIcons.solidCopy,
+          title: 'Pengajuan Demo',
+          ontap: () => Get.to(DemoRequest())));
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue,
+          icon: FontAwesomeIcons.userCheck,
+          title: 'Monitoring Permintaan Demo',
+          ontap: () => Get.to(DemoRequestMonitoring())));
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue,
+          icon: FontAwesomeIcons.chalkboardTeacher,
+          title: 'Monitoring Penugasan Demo',
+          ontap: () => Get.to(DemoAssignmentMonitoring())));
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue,
+          icon: FontAwesomeIcons.truck,
+          title: 'Perjalanan Demo',
+          ontap: () => Get.to(DemoTripMonitoring())));
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue,
+          icon: FontAwesomeIcons.box,
+          title: 'Peminjaman Barang',
+          ontap: () => Get.to(Warehouse())));
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue, icon: FontAwesomeIcons.moneyBill, title: 'kasir', ontap: () => Get.to(Cashier())));
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue, icon: FontAwesomeIcons.wrench, title: 'Teknisi', ontap: () => Get.to(Technician())));
+    }
   }
 
   Future roleCheck() async {

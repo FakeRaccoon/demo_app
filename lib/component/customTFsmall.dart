@@ -40,7 +40,7 @@ class CustomTextFieldSmall extends StatelessWidget {
           autofocus: true,
           inputFormatters: inputformat,
           controller: controller,
-          readOnly: readOnly,
+          readOnly: readOnly ?? false,
           onTap: ontap,
           onChanged: onchange,
           keyboardType: keyboardtype,
