@@ -16,10 +16,10 @@ class Coa {
     this.coaCategoryId,
   });
 
-  int coaId;
+  dynamic coaId;
   String coaCode;
   String coaName;
-  int coaCategoryId;
+  dynamic coaCategoryId;
 
   factory Coa.fromJson(Map<String, dynamic> json) => Coa(
         coaId: json["coaId"] == null ? null : json["coaId"],

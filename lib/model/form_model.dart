@@ -4,7 +4,8 @@
 
 import 'dart:convert';
 
-List<FormResult> formResultFromJson(String str) => List<FormResult>.from(json.decode(str).map((x) => FormResult.fromJson(x)));
+List<FormResult> formResultFromJson(String str) =>
+    List<FormResult>.from(json.decode(str).map((x) => FormResult.fromJson(x)));
 
 String formResultToJson(List<FormResult> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
@@ -15,7 +16,9 @@ class FormResult {
     this.city,
     this.district,
     this.user,
+    this.itemId,
     this.item,
+    this.warehouse,
     this.fee,
     this.transport,
     this.driver,
@@ -35,7 +38,9 @@ class FormResult {
   City city;
   City district;
   User user;
+  int itemId;
   String item;
+  String warehouse;
   List<Fee> fee;
   City transport;
   Driver driver;
@@ -50,46 +55,52 @@ class FormResult {
   DateTime updatedAt;
 
   factory FormResult.fromJson(Map<String, dynamic> json) => FormResult(
-    id: json["id"] == null ? null : json["id"],
-    province: json["province"] == null ? null : City.fromJson(json["province"]),
-    city: json["city"] == null ? null : City.fromJson(json["city"]),
-    district: json["district"] == null ? null : City.fromJson(json["district"]),
-    user: json["user"] == null ? null : User.fromJson(json["user"]),
-    item: json["item"] == null ? null : json["item"],
-    fee: json["fee"] == null ? null : List<Fee>.from(json["fee"].map((x) => Fee.fromJson(x))),
-    transport: json["transport"] == null ? null : City.fromJson(json["transport"]),
-    driver: json["driver"] == null ? null : Driver.fromJson(json["driver"]),
-    technician: json["technician"] == null ? null : List<Technician>.from(json["technician"].map((x) => Technician.fromJson(x))),
-    estimatedDate: json["estimated_date"] == null ? null : DateTime.parse(json["estimated_date"]),
-    type: json["type"] == null ? null : json["type"],
-    status: json["status"] == null ? null : json["status"],
-    image: json["image"],
-    departureDate: json["departure_date"] == null ? null : DateTime.parse(json["departure_date"]),
-    returnDate: json["return_date"] == null ? null : DateTime.parse(json["return_date"]),
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
-  );
+        id: json["id"] == null ? null : json["id"],
+        province: json["province"] == null ? null : City.fromJson(json["province"]),
+        city: json["city"] == null ? null : City.fromJson(json["city"]),
+        district: json["district"] == null ? null : City.fromJson(json["district"]),
+        user: json["user"] == null ? null : User.fromJson(json["user"]),
+        itemId: json["item_id"] == null ? null : json["item_id"],
+        item: json["item"] == null ? null : json["item"],
+        warehouse: json["warehouse"] == null ? null : json["warehouse"],
+        fee: json["fee"] == null ? null : List<Fee>.from(json["fee"].map((x) => Fee.fromJson(x))),
+        transport: json["transport"] == null ? null : City.fromJson(json["transport"]),
+        driver: json["driver"] == null ? null : Driver.fromJson(json["driver"]),
+        technician: json["technician"] == null
+            ? null
+            : List<Technician>.from(json["technician"].map((x) => Technician.fromJson(x))),
+        estimatedDate: json["estimated_date"] == null ? null : DateTime.parse(json["estimated_date"]),
+        type: json["type"] == null ? null : json["type"],
+        status: json["status"] == null ? null : json["status"],
+        image: json["image"],
+        departureDate: json["departure_date"] == null ? null : DateTime.parse(json["departure_date"]),
+        returnDate: json["return_date"] == null ? null : DateTime.parse(json["return_date"]),
+        createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id == null ? null : id,
-    "province": province == null ? null : province.toJson(),
-    "city": city == null ? null : city.toJson(),
-    "district": district == null ? null : district.toJson(),
-    "user": user == null ? null : user.toJson(),
-    "item": item == null ? null : item,
-    "fee": fee == null ? null : List<dynamic>.from(fee.map((x) => x.toJson())),
-    "transport": transport == null ? null : transport.toJson(),
-    "driver": driver == null ? null : driver.toJson(),
-    "technician": technician == null ? null : List<dynamic>.from(technician.map((x) => x.toJson())),
-    "estimated_date": estimatedDate == null ? null : estimatedDate.toIso8601String(),
-    "type": type == null ? null : type,
-    "status": status == null ? null : status,
-    "image": image,
-    "departure_date": departureDate == null ? null : departureDate.toIso8601String(),
-    "return_date": returnDate == null ? null : returnDate.toIso8601String(),
-    "created_at": createdAt == null ? null : createdAt.toIso8601String(),
-    "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
-  };
+        "id": id == null ? null : id,
+        "province": province == null ? null : province.toJson(),
+        "city": city == null ? null : city.toJson(),
+        "district": district == null ? null : district.toJson(),
+        "user": user == null ? null : user.toJson(),
+        "item_id": itemId == null ? null : itemId,
+        "item": item == null ? null : item,
+        "warehouse": warehouse == null ? null : warehouse,
+        "fee": fee == null ? null : List<dynamic>.from(fee.map((x) => x.toJson())),
+        "transport": transport == null ? null : transport.toJson(),
+        "driver": driver == null ? null : driver.toJson(),
+        "technician": technician == null ? null : List<dynamic>.from(technician.map((x) => x.toJson())),
+        "estimated_date": estimatedDate == null ? null : estimatedDate.toIso8601String(),
+        "type": type == null ? null : type,
+        "status": status == null ? null : status,
+        "image": image,
+        "departure_date": departureDate == null ? null : departureDate.toIso8601String(),
+        "return_date": returnDate == null ? null : returnDate.toIso8601String(),
+        "created_at": createdAt == null ? null : createdAt.toIso8601String(),
+        "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
+      };
 }
 
 class City {
@@ -114,26 +125,66 @@ class City {
   dynamic platNo;
 
   factory City.fromJson(Map<String, dynamic> json) => City(
-    id: json["id"] == null ? null : json["id"],
-    provinceId: json["province_id"] == null ? null : json["province_id"],
-    name: json["name"] == null ? null : json["name"],
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
-    deletedAt: json["deleted_at"],
-    cityId: json["city_id"] == null ? null : json["city_id"],
-    platNo: json["plat_no"],
-  );
+        id: json["id"] == null ? null : json["id"],
+        provinceId: json["province_id"] == null ? null : json["province_id"],
+        name: json["name"] == null ? null : json["name"],
+        createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+        deletedAt: json["deleted_at"],
+        cityId: json["city_id"] == null ? null : json["city_id"],
+        platNo: json["plat_no"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id == null ? null : id,
-    "province_id": provinceId == null ? null : provinceId,
-    "name": name == null ? null : name,
-    "created_at": createdAt == null ? null : createdAt.toIso8601String(),
-    "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
-    "deleted_at": deletedAt,
-    "city_id": cityId == null ? null : cityId,
-    "plat_no": platNo,
-  };
+        "id": id == null ? null : id,
+        "province_id": provinceId == null ? null : provinceId,
+        "name": name == null ? null : name,
+        "created_at": createdAt == null ? null : createdAt.toIso8601String(),
+        "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
+        "deleted_at": deletedAt,
+        "city_id": cityId == null ? null : cityId,
+        "plat_no": platNo,
+      };
+}
+
+class District {
+  District({
+    this.id,
+    this.cityId,
+    this.name,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
+    this.platNo,
+  });
+
+  int id;
+  int cityId;
+  String name;
+  DateTime createdAt;
+  DateTime updatedAt;
+  dynamic deletedAt;
+  dynamic platNo;
+
+  factory District.fromJson(Map<String, dynamic> json) => District(
+        id: json["id"] == null ? null : json["id"],
+        cityId: json["city_id"] == null ? null : json["city_id"],
+        name: json["name"] == null ? null : json["name"],
+        createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+        deletedAt: json["deleted_at"],
+        platNo: json["plat_no"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id == null ? null : id,
+        "name": name == null ? null : name,
+        "created_at": createdAt == null ? null : createdAt.toIso8601String(),
+        "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
+        "deleted_at": deletedAt,
+        "city_id": cityId == null ? null : cityId,
+        "plat_no": platNo,
+      };
 }
 
 class Driver {
@@ -158,26 +209,26 @@ class Driver {
   dynamic updatedAt;
 
   factory Driver.fromJson(Map<String, dynamic> json) => Driver(
-    id: json["id"] == null ? null : json["id"],
-    formId: json["form_id"] == null ? null : json["form_id"],
-    userId: json["user_id"] == null ? null : json["user_id"],
-    name: json["name"] == null ? null : json["name"],
-    transport: json["transport"] == null ? null : json["transport"],
-    transportId: json["transport_id"] == null ? null : json["transport_id"],
-    createdAt: json["created_at"],
-    updatedAt: json["updated_at"],
-  );
+        id: json["id"] == null ? null : json["id"],
+        formId: json["form_id"] == null ? null : json["form_id"],
+        userId: json["user_id"] == null ? null : json["user_id"],
+        name: json["name"] == null ? null : json["name"],
+        transport: json["transport"] == null ? null : json["transport"],
+        transportId: json["transport_id"] == null ? null : json["transport_id"],
+        createdAt: json["created_at"],
+        updatedAt: json["updated_at"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id == null ? null : id,
-    "form_id": formId == null ? null : formId,
-    "user_id": userId == null ? null : userId,
-    "name": name == null ? null : name,
-    "transport": transport == null ? null : transport,
-    "transport_id": transportId == null ? null : transportId,
-    "created_at": createdAt,
-    "updated_at": updatedAt,
-  };
+        "id": id == null ? null : id,
+        "form_id": formId == null ? null : formId,
+        "user_id": userId == null ? null : userId,
+        "name": name == null ? null : name,
+        "transport": transport == null ? null : transport,
+        "transport_id": transportId == null ? null : transportId,
+        "created_at": createdAt,
+        "updated_at": updatedAt,
+      };
 }
 
 class Fee {
@@ -198,22 +249,22 @@ class Fee {
   DateTime updatedAt;
 
   factory Fee.fromJson(Map<String, dynamic> json) => Fee(
-    id: json["id"] == null ? null : json["id"],
-    formId: json["form_id"] == null ? null : json["form_id"],
-    fee: json["fee"] == null ? null : json["fee"],
-    description: json["description"] == null ? null : json["description"],
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
-  );
+        id: json["id"] == null ? null : json["id"],
+        formId: json["form_id"] == null ? null : json["form_id"],
+        fee: json["fee"] == null ? null : json["fee"],
+        description: json["description"] == null ? null : json["description"],
+        createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id == null ? null : id,
-    "form_id": formId == null ? null : formId,
-    "fee": fee == null ? null : fee,
-    "description": description == null ? null : description,
-    "created_at": createdAt == null ? null : createdAt.toIso8601String(),
-    "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
-  };
+        "id": id == null ? null : id,
+        "form_id": formId == null ? null : formId,
+        "fee": fee == null ? null : fee,
+        "description": description == null ? null : description,
+        "created_at": createdAt == null ? null : createdAt.toIso8601String(),
+        "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
+      };
 }
 
 class Technician {
@@ -240,28 +291,28 @@ class Technician {
   DateTime updatedAt;
 
   factory Technician.fromJson(Map<String, dynamic> json) => Technician(
-    id: json["id"] == null ? null : json["id"],
-    formId: json["form_id"] == null ? null : json["form_id"],
-    name: json["name"] == null ? null : json["name"],
-    task: json["task"] == null ? null : json["task"],
-    depart: json["depart"] == null ? null : DateTime.parse(json["depart"]),
-    technicianReturn: json["return"] == null ? null : DateTime.parse(json["return"]),
-    confirmed: json["confirmed"] == null ? null : json["confirmed"],
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
-  );
+        id: json["id"] == null ? null : json["id"],
+        formId: json["form_id"] == null ? null : json["form_id"],
+        name: json["name"] == null ? null : json["name"],
+        task: json["task"] == null ? null : json["task"],
+        depart: json["depart"] == null ? null : DateTime.parse(json["depart"]),
+        technicianReturn: json["return"] == null ? null : DateTime.parse(json["return"]),
+        confirmed: json["confirmed"] == null ? null : json["confirmed"],
+        createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id == null ? null : id,
-    "form_id": formId == null ? null : formId,
-    "name": name == null ? null : name,
-    "task": task == null ? null : task,
-    "depart": depart == null ? null : depart.toIso8601String(),
-    "return": technicianReturn == null ? null : technicianReturn.toIso8601String(),
-    "confirmed": confirmed == null ? null : confirmed,
-    "created_at": createdAt == null ? null : createdAt.toIso8601String(),
-    "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
-  };
+        "id": id == null ? null : id,
+        "form_id": formId == null ? null : formId,
+        "name": name == null ? null : name,
+        "task": task == null ? null : task,
+        "depart": depart == null ? null : depart.toIso8601String(),
+        "return": technicianReturn == null ? null : technicianReturn.toIso8601String(),
+        "confirmed": confirmed == null ? null : confirmed,
+        "created_at": createdAt == null ? null : createdAt.toIso8601String(),
+        "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
+      };
 }
 
 class User {
@@ -284,22 +335,22 @@ class User {
   DateTime updatedAt;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-    id: json["id"] == null ? null : json["id"],
-    name: json["name"] == null ? null : json["name"],
-    username: json["username"] == null ? null : json["username"],
-    role: json["role"] == null ? null : json["role"],
-    selected: json["selected"] == null ? null : json["selected"],
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
-  );
+        id: json["id"] == null ? null : json["id"],
+        name: json["name"] == null ? null : json["name"],
+        username: json["username"] == null ? null : json["username"],
+        role: json["role"] == null ? null : json["role"],
+        selected: json["selected"] == null ? null : json["selected"],
+        createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id == null ? null : id,
-    "name": name == null ? null : name,
-    "username": username == null ? null : username,
-    "role": role == null ? null : role,
-    "selected": selected == null ? null : selected,
-    "created_at": createdAt == null ? null : createdAt.toIso8601String(),
-    "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
-  };
+        "id": id == null ? null : id,
+        "name": name == null ? null : name,
+        "username": username == null ? null : username,
+        "role": role == null ? null : role,
+        "selected": selected == null ? null : selected,
+        "created_at": createdAt == null ? null : createdAt.toIso8601String(),
+        "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
+      };
 }

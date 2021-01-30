@@ -72,10 +72,7 @@ class _BodyState extends State<Body> {
                   return FaIcon(FontAwesomeIcons.solidBell);
                 }
                 return Badge(
-                  badgeContent: Text(
-                    snapshot.data.docs.length.toString(),
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  badgeContent: Text(snapshot.data.docs.length.toString(), style: TextStyle(color: Colors.white)),
                   child: FaIcon(FontAwesomeIcons.solidBell),
                 );
               },

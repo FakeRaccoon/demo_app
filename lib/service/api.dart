@@ -12,6 +12,7 @@ import 'package:atana/model/province_model.dart';
 import 'package:atana/model/technician_task.dart';
 import 'package:atana/model/transport_model.dart';
 import 'package:atana/model/user_model.dart';
+import 'package:atana/model/warehouse_check_model.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -84,7 +85,7 @@ class API {
     }
   }
 
-  static Future createForm(provinceId, cityId, districtId, item, type, date) async {
+  static Future createForm(provinceId, cityId, districtId, itemId, item, type, date) async {
     sharedPreferences = await SharedPreferences.getInstance();
     final salesId = sharedPreferences.getInt('userId');
     final token = sharedPreferences.getString('token');
@@ -98,6 +99,7 @@ class API {
             "province_id": provinceId,
             "city_id": cityId,
             "district_id": districtId,
+            "item_id": itemId,
             "item": item,
             "user_id": salesId,
             "status": 1,
@@ -112,12 +114,13 @@ class API {
     }
   }
 
-  static Future assignTechnician(technician, assignmentId, item, departDate, returnDate) async {
+  static Future assignTechnician(technician, assignmentId, item, warehouse, departDate, returnDate) async {
     final String url = "http://10.0.2.2:8000/api/technician/create";
     try {
       final response = await Dio().post(url, queryParameters: {
         "form_id": assignmentId,
         "name": technician,
+        "warehouse": warehouse,
         "task": "Ambil barang $item",
         "depart": departDate,
         "return": returnDate,
@@ -236,10 +239,11 @@ class API {
     }
   }
 
-  static Future updateForm(id, status, driver, vehicle, departDate, returnDate) async {
+  static Future updateForm(id, status, driver, vehicle, warehouse, departDate, returnDate) async {
     final String url = "http://10.0.2.2:8000/api/form/update/$id";
     try {
       final response = await Dio().put(url, queryParameters: {
+        "warehouse": warehouse,
         "status": status,
         "driver_id": driver,
         "transport_id": vehicle,
@@ -326,6 +330,32 @@ class API {
           print(response.data);
           final warehouse = warehouseFromJson(jsonEncode(response.data['warehouse']));
           return warehouse;
+        }
+      }
+    } on Exception catch (e) {
+      print(e);
+      // TODO
+    }
+  }
+
+  static Future warehouseCheck(itemId) async {
+    final url = "http://192.168.0.250:5050/api/Items/GetItemStockWarehouseSimple";
+    try {
+      final atanaResponse = await Dio().post(atanaUrl,
+          options: Options(headers: {
+            "username": "FLUTTERAPPS",
+            "password": "a0d2f3a1ebdcf8681c5fd16f3d28a9cc",
+          }));
+      if (atanaResponse.statusCode == 200) {
+        final atanaToken = atanaResponse.data['token']['tokenKey'];
+        final response = await Dio().get(url,
+            options: Options(headers: {
+              'Authorization': "Bearer $atanaToken",
+              'itemId': itemId,
+            }));
+        if (response.statusCode == 200) {
+          final warehouseCheck = warehouseCheckResultFromJson(jsonEncode(response.data['stockBalance']));
+          return warehouseCheck;
         }
       }
     } on Exception catch (e) {
