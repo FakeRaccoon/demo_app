@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-class NotificationScreenComponent extends StatelessWidget {
+class NotificationScreenComponent extends StatefulWidget {
   final String title;
   final String content;
   final Timestamp date;
@@ -12,9 +12,20 @@ class NotificationScreenComponent extends StatelessWidget {
   const NotificationScreenComponent({Key key, this.title, this.content, this.colors, this.date}) : super(key: key);
 
   @override
+  _NotificationScreenComponentState createState() => _NotificationScreenComponentState();
+}
+
+class _NotificationScreenComponentState extends State<NotificationScreenComponent> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
-      color: colors,
+      color: widget.colors,
       child: Padding(
         padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
         child: Column(
@@ -27,19 +38,18 @@ class NotificationScreenComponent extends StatelessWidget {
                 SizedBox(width: 5),
                 Text('•', style: TextStyle(color: Colors.grey[500])),
                 SizedBox(width: 5),
-                Text(DateFormat('d MMM y').format(date.toDate()),
+                Text(DateFormat('d MMM y').format(widget.date.toDate()),
                     style: GoogleFonts.sourceSansPro(fontSize: 14, color: Colors.grey[500])),
               ],
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title ?? 'Ale', style: GoogleFonts.sourceSansPro(fontWeight: FontWeight.bold, fontSize: 16)),
+                Text(widget.title ?? 'Ale',
+                    style: GoogleFonts.sourceSansPro(fontWeight: FontWeight.bold, fontSize: 16)),
                 Text(
-                  content ?? 'Ale',
+                  widget.content ?? 'Ale',
                   style: GoogleFonts.sourceSansPro(color: Colors.grey[500], fontSize: 16),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
                 ),
               ],
             ),

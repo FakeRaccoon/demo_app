@@ -15,14 +15,13 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   int selectedPage = 0;
-  List<Widget> pageList = List<Widget>();
+  List<Widget> pageList = [];
 
   SharedPreferences sharedPreferences;
 
   @override
   void initState() {
     pageList.add(Home());
-    pageList.add(NotificationPage());
     pageList.add(UserPage());
     super.initState();
     FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
@@ -56,29 +55,29 @@ class _BodyState extends State<Body> {
             icon: FaIcon(FontAwesomeIcons.home),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
-            icon: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('Users')
-                  .doc(username)
-                  .collection('notifications')
-                  .where('read', isEqualTo: false)
-                  .snapshots(),
-              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return FaIcon(FontAwesomeIcons.solidBell);
-                }
-                if (snapshot.data.docs.length == 0 || snapshot.data == null) {
-                  return FaIcon(FontAwesomeIcons.solidBell);
-                }
-                return Badge(
-                  badgeContent: Text(snapshot.data.docs.length.toString(), style: TextStyle(color: Colors.white)),
-                  child: FaIcon(FontAwesomeIcons.solidBell),
-                );
-              },
-            ),
-            label: 'Notifikasi',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: StreamBuilder<QuerySnapshot>(
+          //     stream: FirebaseFirestore.instance
+          //         .collection('Users')
+          //         .doc(username)
+          //         .collection('notifications')
+          //         .where('read', isEqualTo: false)
+          //         .snapshots(),
+          //     builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          //       if (snapshot.connectionState == ConnectionState.waiting) {
+          //         return FaIcon(FontAwesomeIcons.solidBell);
+          //       }
+          //       if (snapshot.data.docs.length == 0 || snapshot.data == null) {
+          //         return FaIcon(FontAwesomeIcons.solidBell);
+          //       }
+          //       return Badge(
+          //         badgeContent: Text(snapshot.data.docs.length.toString(), style: TextStyle(color: Colors.white)),
+          //         child: FaIcon(FontAwesomeIcons.solidBell),
+          //       );
+          //     },
+          //   ),
+          //   label: 'Notifikasi',
+          // ),
           BottomNavigationBarItem(
             icon: FaIcon(FontAwesomeIcons.solidUser),
             label: 'User',

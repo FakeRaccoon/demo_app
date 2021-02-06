@@ -25,7 +25,7 @@ class CityResult {
 
   factory CityResult.fromJson(Map<String, dynamic> json) => CityResult(
     id: json["id"] == null ? null : json["id"],
-    provinceId: json["province_id"] == null ? null : json["province_id"],
+    provinceId: json["province_id"] == null ? null : int.parse(json["province_id"]),
     name: json["name"] == null ? null : json["name"],
     createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
     updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),

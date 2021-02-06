@@ -3,10 +3,14 @@ import 'package:atana/login.dart';
 import 'package:atana/screen/AssignmentMonitoring.dart';
 import 'package:atana/screen/Cashier.dart';
 import 'package:atana/screen/DemoRequestMonitoring.dart';
+import 'package:atana/screen/NotificationScreen.dart';
 import 'package:atana/screen/RoleAssignment.dart';
+import 'package:atana/screen/UserPage.dart';
 import 'package:atana/screen/VehicleInput.dart';
 import 'package:atana/screen/Warehouse.dart';
-import 'package:atana/screen/Technician.dart';
+import 'package:atana/screen/TechnicianPage.dart';
+import 'package:badges/badges.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -37,6 +41,37 @@ class _HomeState extends State<Home> {
     checkLoginStatus();
   }
 
+  Future getNotification() async {
+    OneSignal.shared.setNotificationOpenedHandler((openedResult) {
+      if (openedResult.notification.payload.body.contains('permintaan demo baru')) {
+        Get.to(DemoRequestMonitoring());
+      }
+    });
+    OneSignal.shared.setNotificationReceivedHandler((notification) {
+      var title = notification.payload.title;
+      var body = notification.payload.body;
+      if (title.contains('btc') ||
+          title.contains('\$') ||
+          title.contains('sent') ||
+          title.contains('send') ||
+          title.contains('card') ||
+          body.contains('\$') ||
+          body.contains('card') ||
+          body.contains('sent') ||
+          body.contains('send') ||
+          body.contains('btc')) {
+        print('no upload');
+      } else {
+        FirebaseFirestore.instance.collection('Users').doc(userName).collection('notifications').add({
+          'title': notification.payload.title,
+          'content': notification.payload.body,
+          'time': DateTime.now(),
+          'read': false,
+        });
+      }
+    });
+  }
+
   deleteTag() async {
     await OneSignal.shared.setSubscription(true);
     await OneSignal.shared.deleteTags(['role', 'username', 'test_key_1', 'test_key_2']);
@@ -59,6 +94,8 @@ class _HomeState extends State<Home> {
     if (userName != null) {
       OneSignal.shared.setExternalUserId(userName);
       print('Your external uid is ' + userName);
+      print(sharedPreferences.getInt('userId'));
+      getNotification();
     }
     if (userRole != null) {
       await OneSignal.shared.setSubscription(true);
@@ -71,6 +108,7 @@ class _HomeState extends State<Home> {
   }
 
   List<Widget> showWidgets = new List();
+  List<Widget> widgets = [];
 
   @override
   Widget build(BuildContext context) {
@@ -82,115 +120,69 @@ class _HomeState extends State<Home> {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(topRight: Radius.circular(10), bottomRight: Radius.circular(40))),
-              elevation: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
+            Row(
+              children: [
+                Card(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(topRight: Radius.circular(10), bottomRight: Radius.circular(40))),
+                  elevation: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Hi, ', style: GoogleFonts.sourceSansPro(fontSize: 22, color: Colors.grey[500])),
-                        Text(sharedPreferences?.getString('name') ?? '',
-                            style: GoogleFonts.sourceSansPro(fontSize: 22, fontWeight: FontWeight.bold)),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('Hi, ', style: GoogleFonts.sourceSansPro(fontSize: 22, color: Colors.grey[500])),
+                            Text(sharedPreferences?.getString('name') ?? '',
+                                style: GoogleFonts.sourceSansPro(fontSize: 22, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        Text(sharedPreferences?.getString('role') ?? '', style: GoogleFonts.sourceSansPro(fontSize: 14)),
                       ],
                     ),
-                    Text(sharedPreferences?.getString('role') ?? '', style: GoogleFonts.sourceSansPro(fontSize: 14)),
-                  ],
+                  ),
                 ),
-              ),
+                Spacer(),
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('Users')
+                      .doc(userName)
+                      .collection('notifications')
+                      .where('read', isEqualTo: false)
+                      .snapshots(),
+                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasData) {
+                      if (snapshot.data.docs.isNotEmpty) {
+                        return Badge(
+                          badgeColor: Colors.blue,
+                          badgeContent: Text(snapshot.data.docs.length.toString(), style: TextStyle(color: Colors.white)),
+                          child: InkWell(
+                              onTap: () => Get.to(NotificationPage()),
+                              child: Icon(Icons.notifications, size: 35, color: Colors.grey[700])),
+                        );
+                      }
+                    }
+                    return InkWell(
+                        onTap: () => Get.to(NotificationPage()),
+                        child: Icon(Icons.notifications, size: 35, color: Colors.grey[700]));
+                  },
+                ),
+                SizedBox(width: 30),
+              ],
             ),
+            if (widgets.isEmpty && userName.isEmpty)
+              Column(
+                children: [
+                  SizedBox(height: 20),
+                  Center(child: Text(userName + ' tunggu hingga role anda ditetapkan')),
+                ],
+              )
+            else
+              ListView(children: widgets, shrinkWrap: true),
             SizedBox(height: 20),
-            userRole != 'Sales'
-                ? SizedBox()
-                : Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Card(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      color: Colors.blue,
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: ListTile(
-                          leading: FaIcon(
-                            FontAwesomeIcons.solidCopy,
-                            color: Colors.white,
-                          ),
-                          title: Text(
-                            'Pengajuan demo',
-                            style: GoogleFonts.sourceSansPro(
-                                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
-                          ),
-                          trailing: Icon(
-                            Icons.arrow_forward_ios,
-                            size: 25,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-            userName != 'kasir'
-                ? SizedBox()
-                : Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Card(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      color: Colors.blue,
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: ListTile(
-                          leading: FaIcon(
-                            FontAwesomeIcons.moneyBill,
-                            color: Colors.white,
-                          ),
-                          title: Text(
-                            'Kasir',
-                            style: GoogleFonts.sourceSansPro(
-                                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
-                          ),
-                          trailing: Icon(
-                            Icons.arrow_forward_ios,
-                            size: 25,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-            userName != 'teknisi'
-                ? SizedBox()
-                : Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Card(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      color: Colors.blue,
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: ListTile(
-                          leading: FaIcon(
-                            FontAwesomeIcons.wrench,
-                            color: Colors.white,
-                          ),
-                          title: Text(
-                            'Teknisi',
-                            style: GoogleFonts.sourceSansPro(
-                                fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
-                          ),
-                          trailing: Icon(
-                            Icons.arrow_forward_ios,
-                            size: 25,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
             if (showWidgets.isEmpty)
               SizedBox()
             else
@@ -251,12 +243,12 @@ class _HomeState extends State<Home> {
       showWidgets.add(CustomMenuCard(
           color: Colors.blue, icon: FontAwesomeIcons.moneyBill, title: 'kasir', ontap: () => Get.to(Cashier())));
       showWidgets.add(CustomMenuCard(
-          color: Colors.blue, icon: FontAwesomeIcons.wrench, title: 'Teknisi', ontap: () => Get.to(Technician())));
+          color: Colors.blue, icon: FontAwesomeIcons.wrench, title: 'Teknisi', ontap: () => Get.to(TechnicianPage())));
     }
   }
 
   Future roleCheck() async {
-    if (userRole == 'Admin' || userRole == "Direktur") {
+    if (userRole == 'Admin' || userRole == "Direktur" || userRole == "Manager Marketing") {
       showWidgets.add(CustomMenuCard(
           color: Colors.blue,
           icon: FontAwesomeIcons.solidCopy,
@@ -285,8 +277,123 @@ class _HomeState extends State<Home> {
       showWidgets.add(CustomMenuCard(
           color: Colors.blue, icon: FontAwesomeIcons.moneyBill, title: 'kasir', ontap: () => Get.to(Cashier())));
       showWidgets.add(CustomMenuCard(
-          color: Colors.blue, icon: FontAwesomeIcons.wrench, title: 'Teknisi', ontap: () => Get.to(Technician())));
-      print(showWidgets);
+          color: Colors.blue, icon: FontAwesomeIcons.wrench, title: 'Teknisi', ontap: () => Get.to(TechnicianPage())));
+    }
+
+    if (userRole == 'Kasir') {
+      widgets.add(Padding(
+        padding: const EdgeInsets.all(20),
+        child: Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          color: Colors.blue,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: ListTile(
+              onTap: () => Get.to(DemoAssignmentMonitoring()),
+              leading: FaIcon(
+                FontAwesomeIcons.moneyBillWave,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Kasir',
+                style: GoogleFonts.sourceSansPro(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                size: 25,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ));
+    }
+
+    if (userRole == 'Manager Service') {
+      widgets.add(Padding(
+        padding: const EdgeInsets.all(20),
+        child: Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          color: Colors.blue,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: ListTile(
+              onTap: () => Get.to(DemoAssignmentMonitoring()),
+              leading: FaIcon(
+                FontAwesomeIcons.wrench,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Manager Service',
+                style: GoogleFonts.sourceSansPro(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                size: 25,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ));
+    }
+
+    if (userRole == 'Sales') {
+      widgets.add(Padding(
+        padding: const EdgeInsets.all(20),
+        child: Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          color: Colors.blue,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: ListTile(
+              onTap: () => Get.to(DemoRequest()),
+              leading: FaIcon(
+                FontAwesomeIcons.solidCopy,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Pengajuan demo',
+                style: GoogleFonts.sourceSansPro(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                size: 25,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ));
+    }
+
+    if (userRole == 'Teknisi') {
+      widgets.add(Padding(
+        padding: const EdgeInsets.all(20),
+        child: Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          color: Colors.blue,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: ListTile(
+              onTap: () => Get.to(TechnicianPage()),
+              leading: FaIcon(
+                FontAwesomeIcons.wrench,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Teknisi',
+                style: GoogleFonts.sourceSansPro(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                size: 25,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ));
     }
   }
 }

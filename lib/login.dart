@@ -1,6 +1,9 @@
+import 'package:atana/Home.dart';
 import 'package:atana/body.dart';
 import 'package:atana/screen/Register.dart';
+import 'package:atana/service/api.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,6 +21,17 @@ class _LoginState extends State<Login> {
     // TODO: implement initState
     super.initState();
     isObscured = true;
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+    logout();
+  }
+
+  SharedPreferences sharedPreferences;
+
+  Future<void> logout() async {
+    sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.clear();
+    sharedPreferences.commit();
+    print(sharedPreferences.getInt('userId'));
   }
 
   bool isObscured = true;
@@ -109,7 +123,19 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  FlatButton(onPressed: () => Get.to(Register()), child: Text('Register'))
+                  ButtonTheme(
+                    minWidth: MediaQuery.of(context).size.width,
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    height: 40,
+                    child: FlatButton(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      onPressed: () => Get.to(Register()),
+                      color: Colors.transparent,
+                      child: Text('Register',
+                          style: GoogleFonts.sourceSansPro(color: Colors.black, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -120,7 +146,7 @@ class _LoginState extends State<Login> {
   }
 
   loginTest(String username, String password) async {
-    String localUrl = 'http://10.0.2.2:8000/api/login';
+    String localUrl = baseDemoUrl + 'login';
     try {
       Response response = await Dio().post(localUrl, data: {
         'username': username,

@@ -19,9 +19,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      builder: (context, child) {
+        return ScrollConfiguration(behavior: MyBehavior(), child: child);
+      },
       theme: ThemeData(splashColor: Colors.transparent, highlightColor: Colors.transparent),
       debugShowCheckedModeBanner: false,
       home: Root(),
     );
+  }
+}
+
+class MyBehavior extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
   }
 }

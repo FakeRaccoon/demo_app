@@ -1,43 +1,46 @@
 // To parse this JSON data, do
 //
-//     final technicianTaskResult = technicianTaskResultFromJson(jsonString);
+//     final technicianResult = technicianResultFromJson(jsonString);
 
 import 'dart:convert';
 
-List<TechnicianTaskResult> technicianTaskResultFromJson(String str) => List<TechnicianTaskResult>.from(json.decode(str).map((x) => TechnicianTaskResult.fromJson(x)));
+List<TechnicianResult> technicianResultFromJson(String str) => List<TechnicianResult>.from(json.decode(str).map((x) => TechnicianResult.fromJson(x)));
 
-String technicianTaskResultToJson(List<TechnicianTaskResult> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String technicianResultToJson(List<TechnicianResult> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class TechnicianTaskResult {
-  TechnicianTaskResult({
+class TechnicianResult {
+  TechnicianResult({
     this.id,
     this.formId,
     this.name,
     this.task,
-    this.departDate,
-    this.returnDate,
+    this.warehouse,
+    this.depart,
+    this.technicianResultReturn,
     this.confirmed,
     this.createdAt,
     this.updatedAt,
   });
 
   int id;
-  int formId;
+  String formId;
   String name;
   String task;
-  DateTime departDate;
-  DateTime returnDate;
+  String warehouse;
+  DateTime depart;
+  DateTime technicianResultReturn;
   bool confirmed;
   DateTime createdAt;
   DateTime updatedAt;
 
-  factory TechnicianTaskResult.fromJson(Map<String, dynamic> json) => TechnicianTaskResult(
+  factory TechnicianResult.fromJson(Map<String, dynamic> json) => TechnicianResult(
     id: json["id"] == null ? null : json["id"],
     formId: json["form_id"] == null ? null : json["form_id"],
     name: json["name"] == null ? null : json["name"],
     task: json["task"] == null ? null : json["task"],
-    departDate: json["depart"] == null ? null : DateTime.parse(json["depart"]),
-    returnDate: json["return"] == null ? null : DateTime.parse(json["return"]),
+    warehouse: json["warehouse"] == null ? null : json["warehouse"],
+    depart: json["depart"] == null ? null : DateTime.parse(json["depart"]),
+    technicianResultReturn: json["return"] == null ? null : DateTime.parse(json["return"]),
     confirmed: json["confirmed"] == null ? null : json["confirmed"],
     createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
     updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
@@ -48,8 +51,9 @@ class TechnicianTaskResult {
     "form_id": formId == null ? null : formId,
     "name": name == null ? null : name,
     "task": task == null ? null : task,
-    "depart": departDate == null ? null : departDate.toIso8601String(),
-    "return": returnDate == null ? null : returnDate.toIso8601String(),
+    "warehouse": warehouse == null ? null : warehouse,
+    "depart": depart == null ? null : depart.toIso8601String(),
+    "return": technicianResultReturn == null ? null : technicianResultReturn.toIso8601String(),
     "confirmed": confirmed == null ? null : confirmed,
     "created_at": createdAt == null ? null : createdAt.toIso8601String(),
     "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
