@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="demo"
+        android:label="Demo"
         android:icon="@mipmap/app_icon"
         android:usesCleartextTraffic="true">
         <uses-library

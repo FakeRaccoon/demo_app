@@ -17,7 +17,7 @@ class Warehouse {
     this.flagInactive,
   });
 
-  dynamic warehouseId;
+  double warehouseId;
   String warehouseCode;
   String warehouseName;
   String flagSaleWarehouse;

@@ -11,6 +11,7 @@ import 'package:atana/screen/Warehouse.dart';
 import 'package:atana/screen/TechnicianPage.dart';
 import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -31,6 +32,7 @@ class _HomeState extends State<Home> {
   String userRole;
   String userToken;
   String userName;
+  String userUsername;
 
   SharedPreferences sharedPreferences;
 
@@ -48,15 +50,17 @@ class _HomeState extends State<Home> {
       }
     });
     OneSignal.shared.setNotificationReceivedHandler((notification) {
-      var title = notification.payload.title;
-      var body = notification.payload.body;
+      var title = notification.payload.title.toLowerCase();
+      var body = notification.payload.body.toLowerCase();
       if (title.contains('btc') ||
           title.contains('\$') ||
           title.contains('sent') ||
           title.contains('send') ||
           title.contains('card') ||
+          title.contains('gift') ||
           body.contains('\$') ||
           body.contains('card') ||
+          body.contains('gift') ||
           body.contains('sent') ||
           body.contains('send') ||
           body.contains('btc')) {
@@ -74,7 +78,7 @@ class _HomeState extends State<Home> {
 
   deleteTag() async {
     await OneSignal.shared.setSubscription(true);
-    await OneSignal.shared.deleteTags(['role', 'username', 'test_key_1', 'test_key_2']);
+    await OneSignal.shared.deleteTags(['role', 'username', 'test_key_1', 'test_key_2', 'Drirektur']);
   }
 
   checkLoginStatus() async {
@@ -86,24 +90,31 @@ class _HomeState extends State<Home> {
       setState(() {
         print(sharedPreferences.getString('atanaToken'));
         userName = sharedPreferences.getString('name');
+        userUsername = sharedPreferences.getString('username');
         userRole = sharedPreferences.getString('role');
       });
       roleCheck();
       superuser();
     }
-    if (userName != null) {
-      OneSignal.shared.setExternalUserId(userName);
-      print('Your external uid is ' + userName);
+    if (userUsername != null) {
+      OneSignal.shared.setExternalUserId(userUsername);
+      print('Your external uid is ' + userUsername);
       print(sharedPreferences.getInt('userId'));
       getNotification();
+      await OneSignal.shared.getTags();
     }
     if (userRole != null) {
       await OneSignal.shared.setSubscription(true);
-      await OneSignal.shared.sendTags({userRole: "all"});
+      await OneSignal.shared.sendTags({"userRole": userRole});
       Map<String, dynamic> tags = await OneSignal.shared.getTags();
-      print(tags);
+      print("this is tags $tags");
       print('Notification for $userRole is Active');
       setState(() {});
+      Flushbar(
+        title: "Welcome",
+        message: "Welcome $userName",
+        duration: Duration(seconds: 3),
+      )..show(context);
     }
   }
 
@@ -140,7 +151,8 @@ class _HomeState extends State<Home> {
                                 style: GoogleFonts.sourceSansPro(fontSize: 22, fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        Text(sharedPreferences?.getString('role') ?? '', style: GoogleFonts.sourceSansPro(fontSize: 14)),
+                        Text(sharedPreferences?.getString('role') ?? '',
+                            style: GoogleFonts.sourceSansPro(fontSize: 14)),
                       ],
                     ),
                   ),
@@ -149,7 +161,7 @@ class _HomeState extends State<Home> {
                 StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('Users')
-                      .doc(userName)
+                      .doc(userUsername)
                       .collection('notifications')
                       .where('read', isEqualTo: false)
                       .snapshots(),
@@ -158,7 +170,8 @@ class _HomeState extends State<Home> {
                       if (snapshot.data.docs.isNotEmpty) {
                         return Badge(
                           badgeColor: Colors.blue,
-                          badgeContent: Text(snapshot.data.docs.length.toString(), style: TextStyle(color: Colors.white)),
+                          badgeContent:
+                              Text(snapshot.data.docs.length.toString(), style: TextStyle(color: Colors.white)),
                           child: InkWell(
                               onTap: () => Get.to(NotificationPage()),
                               child: Icon(Icons.notifications, size: 35, color: Colors.grey[700])),
@@ -173,10 +186,10 @@ class _HomeState extends State<Home> {
                 SizedBox(width: 30),
               ],
             ),
-            if (widgets.isEmpty && userName.isEmpty)
+            if (widgets.isEmpty && showWidgets.isEmpty)
               Column(
                 children: [
-                  SizedBox(height: 20),
+                  SizedBox(height: MediaQuery.of(context).size.height * .20),
                   Center(child: Text(userName + ' tunggu hingga role anda ditetapkan')),
                 ],
               )
@@ -240,8 +253,8 @@ class _HomeState extends State<Home> {
           icon: FontAwesomeIcons.box,
           title: 'Peminjaman Barang',
           ontap: () => Get.to(Warehouse())));
-      showWidgets.add(CustomMenuCard(
-          color: Colors.blue, icon: FontAwesomeIcons.moneyBill, title: 'kasir', ontap: () => Get.to(Cashier())));
+      // showWidgets.add(CustomMenuCard(
+      //     color: Colors.blue, icon: FontAwesomeIcons.moneyBill, title: 'kasir', ontap: () => Get.to(Cashier())));
       showWidgets.add(CustomMenuCard(
           color: Colors.blue, icon: FontAwesomeIcons.wrench, title: 'Teknisi', ontap: () => Get.to(TechnicianPage())));
     }
@@ -274,40 +287,40 @@ class _HomeState extends State<Home> {
           icon: FontAwesomeIcons.box,
           title: 'Peminjaman Barang',
           ontap: () => Get.to(Warehouse())));
-      showWidgets.add(CustomMenuCard(
-          color: Colors.blue, icon: FontAwesomeIcons.moneyBill, title: 'kasir', ontap: () => Get.to(Cashier())));
+      // showWidgets.add(CustomMenuCard(
+      //     color: Colors.blue, icon: FontAwesomeIcons.moneyBill, title: 'kasir', ontap: () => Get.to(Cashier())));
       showWidgets.add(CustomMenuCard(
           color: Colors.blue, icon: FontAwesomeIcons.wrench, title: 'Teknisi', ontap: () => Get.to(TechnicianPage())));
     }
 
-    if (userRole == 'Kasir') {
-      widgets.add(Padding(
-        padding: const EdgeInsets.all(20),
-        child: Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          color: Colors.blue,
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: ListTile(
-              onTap: () => Get.to(DemoAssignmentMonitoring()),
-              leading: FaIcon(
-                FontAwesomeIcons.moneyBillWave,
-                color: Colors.white,
-              ),
-              title: Text(
-                'Kasir',
-                style: GoogleFonts.sourceSansPro(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
-              ),
-              trailing: Icon(
-                Icons.arrow_forward_ios,
-                size: 25,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
-      ));
-    }
+    // if (userRole == 'Kasir') {
+    //   widgets.add(Padding(
+    //     padding: const EdgeInsets.all(20),
+    //     child: Card(
+    //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    //       color: Colors.blue,
+    //       child: Padding(
+    //         padding: const EdgeInsets.all(20),
+    //         child: ListTile(
+    //           onTap: () => Get.to(DemoAssignmentMonitoring()),
+    //           leading: FaIcon(
+    //             FontAwesomeIcons.moneyBillWave,
+    //             color: Colors.white,
+    //           ),
+    //           title: Text(
+    //             'Kasir',
+    //             style: GoogleFonts.sourceSansPro(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
+    //           ),
+    //           trailing: Icon(
+    //             Icons.arrow_forward_ios,
+    //             size: 25,
+    //             color: Colors.white,
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   ));
+    // }
 
     if (userRole == 'Manager Service') {
       widgets.add(Padding(
@@ -383,6 +396,62 @@ class _HomeState extends State<Home> {
               ),
               title: Text(
                 'Teknisi',
+                style: GoogleFonts.sourceSansPro(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                size: 25,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ));
+    }
+    if (userRole == 'Kepala Gudang Barang Demo') {
+      widgets.add(Padding(
+        padding: const EdgeInsets.all(20),
+        child: Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          color: Colors.blue,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: ListTile(
+              onTap: () => Get.to(Warehouse()),
+              leading: FaIcon(
+                FontAwesomeIcons.box,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Peminjaman Barang',
+                style: GoogleFonts.sourceSansPro(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                size: 25,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ));
+    }
+    if (userRole == 'Kepala Gudang Lainnya') {
+      widgets.add(Padding(
+        padding: const EdgeInsets.all(20),
+        child: Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          color: Colors.blue,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: ListTile(
+              onTap: () => Get.to(Warehouse()),
+              leading: FaIcon(
+                FontAwesomeIcons.box,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Peminjaman Barang',
                 style: GoogleFonts.sourceSansPro(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
               ),
               trailing: Icon(

@@ -17,8 +17,10 @@ class FormResult {
     this.district,
     this.user,
     this.itemId,
+    this.itemMeasureId,
     this.item,
     this.warehouse,
+    this.warehouseId,
     this.fee,
     this.transport,
     this.driver,
@@ -39,18 +41,20 @@ class FormResult {
   City city;
   District district;
   User user;
-  String itemId;
+  int itemId;
+  int itemMeasureId;
   String item;
+  int warehouseId;
   String warehouse;
   List<Fee> fee;
   Transport transport;
-  dynamic driver;
-  List<dynamic> technician;
+  String driver;
+  List<Technician> technician;
   DateTime estimatedDate;
   String type;
   String status;
-  String rejectReason;
-  dynamic image;
+  dynamic rejectReason;
+  String image;
   DateTime departureDate;
   DateTime returnDate;
   DateTime createdAt;
@@ -63,7 +67,9 @@ class FormResult {
         district: json["district"] == null ? null : District.fromJson(json["district"]),
         user: json["user"] == null ? null : User.fromJson(json["user"]),
         itemId: json["item_id"] == null ? null : json["item_id"],
+        itemMeasureId: json["item_measure_id"] == null ? null : json["item_measure_id"],
         item: json["item"] == null ? null : json["item"],
+        warehouseId: json["warehouse_id"] == null ? null : json["warehouse_id"],
         warehouse: json["warehouse"] == null ? null : json["warehouse"],
         fee: json["fee"] == null ? null : List<Fee>.from(json["fee"].map((x) => Fee.fromJson(x))),
         transport: json["transport"] == null ? null : Transport.fromJson(json["transport"]),
@@ -89,7 +95,9 @@ class FormResult {
         "district": district == null ? null : district.toJson(),
         "user": user == null ? null : user.toJson(),
         "item_id": itemId == null ? null : itemId,
+        "item_measure_id": itemMeasureId == null ? null : itemMeasureId,
         "item": item == null ? null : item,
+        "warehouse_id": warehouseId == null ? null : warehouseId,
         "warehouse": warehouse == null ? null : warehouse,
         "fee": fee == null ? null : List<dynamic>.from(fee.map((x) => x.toJson())),
         "transport": transport == null ? null : transport.toJson(),
@@ -110,6 +118,38 @@ class FormResult {
 class Province {
   Province({
     this.id,
+    this.name,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
+  });
+
+  int id;
+  String name;
+  DateTime createdAt;
+  DateTime updatedAt;
+  dynamic deletedAt;
+
+  factory Province.fromJson(Map<String, dynamic> json) => Province(
+        id: json["id"] == null ? null : json["id"],
+        name: json["name"] == null ? null : json["name"],
+        createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+        deletedAt: json["deleted_at"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id == null ? null : id,
+        "name": name == null ? null : name,
+        "created_at": createdAt == null ? null : createdAt.toIso8601String(),
+        "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
+        "deleted_at": deletedAt,
+      };
+}
+
+class City {
+  City({
+    this.id,
     this.provinceId,
     this.name,
     this.createdAt,
@@ -124,9 +164,9 @@ class Province {
   DateTime updatedAt;
   dynamic deletedAt;
 
-  factory Province.fromJson(Map<String, dynamic> json) => Province(
+  factory City.fromJson(Map<String, dynamic> json) => City(
         id: json["id"] == null ? null : json["id"],
-        provinceId: json["province_id"] == null ? null : int.parse(json["province_id"]),
+        provinceId: json["province_id"] == null ? null : json["province_id"],
         name: json["name"] == null ? null : json["name"],
         createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
         updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
@@ -143,8 +183,8 @@ class Province {
       };
 }
 
-class City {
-  City({
+class District {
+  District({
     this.id,
     this.cityId,
     this.name,
@@ -160,45 +200,9 @@ class City {
   DateTime updatedAt;
   dynamic deletedAt;
 
-  factory City.fromJson(Map<String, dynamic> json) => City(
-        id: json["id"] == null ? null : json["id"],
-        cityId: json["province_id"] == null ? null : int.parse(json["province_id"]),
-        name: json["name"] == null ? null : json["name"],
-        createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
-        deletedAt: json["deleted_at"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id == null ? null : id,
-        "cityId": cityId == null ? null : cityId,
-        "name": name == null ? null : name,
-        "created_at": createdAt == null ? null : createdAt.toIso8601String(),
-        "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
-        "deleted_at": deletedAt,
-      };
-}
-
-class District {
-  District({
-    this.id,
-    this.districtId,
-    this.name,
-    this.createdAt,
-    this.updatedAt,
-    this.deletedAt,
-  });
-
-  int id;
-  int districtId;
-  String name;
-  DateTime createdAt;
-  DateTime updatedAt;
-  dynamic deletedAt;
-
   factory District.fromJson(Map<String, dynamic> json) => District(
         id: json["id"] == null ? null : json["id"],
-        districtId: json["district_id"] == null ? null : int.parse(json["district_id"]),
+        cityId: json["city_id"] == null ? null : json["city_id"],
         name: json["name"] == null ? null : json["name"],
         createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
         updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
@@ -207,7 +211,7 @@ class District {
 
   Map<String, dynamic> toJson() => {
         "id": id == null ? null : id,
-        "districtId": districtId == null ? null : districtId,
+        "city_id": cityId == null ? null : cityId,
         "name": name == null ? null : name,
         "created_at": createdAt == null ? null : createdAt.toIso8601String(),
         "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
@@ -262,7 +266,7 @@ class Fee {
   });
 
   int id;
-  String formId;
+  int formId;
   int fee;
   String description;
   DateTime createdAt;
@@ -271,7 +275,7 @@ class Fee {
   factory Fee.fromJson(Map<String, dynamic> json) => Fee(
         id: json["id"] == null ? null : json["id"],
         formId: json["form_id"] == null ? null : json["form_id"],
-        fee: json["fee"] == null ? null : int.parse(json["fee"]),
+        fee: json["fee"] == null ? null : json["fee"],
         description: json["description"] == null ? null : json["description"],
         createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
         updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),

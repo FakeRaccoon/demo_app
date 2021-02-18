@@ -1,11 +1,9 @@
 import 'package:atana/Home.dart';
-import 'package:atana/screen/NotificationScreen.dart';
 import 'package:atana/screen/UserPage.dart';
-import 'package:badges/badges.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Body extends StatefulWidget {
@@ -24,6 +22,7 @@ class _BodyState extends State<Body> {
     pageList.add(Home());
     pageList.add(UserPage());
     super.initState();
+    deleteTags();
     FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
     FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
     getSharedPref();
@@ -31,12 +30,27 @@ class _BodyState extends State<Body> {
 
   Future getSharedPref() async {
     sharedPreferences = await SharedPreferences.getInstance();
-    final getName = sharedPreferences.getString('name');
+    final getName = sharedPreferences.getString('username');
     if (getName != null) {
       setState(() {
         username = getName;
       });
     }
+  }
+
+  Future deleteTags() async {
+    await OneSignal.shared.deleteTags([
+      'userRole',
+      'Admin',
+      'Direktur',
+      'Manager Marketing',
+      'Manager Service',
+      'Kepala Gudang Barang Demo',
+      'Kepala Gudang Lainnya',
+      'Sales',
+      'Teknisi',
+      'Kasir',
+    ]);
   }
 
   String username;

@@ -145,13 +145,16 @@ class _LoginState extends State<Login> {
     );
   }
 
-  loginTest(String username, String password) async {
-    String localUrl = baseDemoUrl + 'login';
+  Future loginTest(String username, String password) async {
     try {
-      Response response = await Dio().post(localUrl, data: {
-        'username': username,
-        'password': password,
-      });
+      final response = await Dio().post(
+        baseDemoUrl + "login",
+        options: Options(headers: {"Content-Type": "application/json"}),
+        queryParameters: {
+          'username': username,
+          'password': password,
+        },
+      );
       if (response.statusCode == 200) {
         final data = response.data['data'];
         setState(() {
@@ -166,8 +169,8 @@ class _LoginState extends State<Login> {
           });
         });
       }
-    } catch (e) {
-      print(e);
+    } on DioError catch (e) {
+      print(e.message);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('login gagal, silahkan cek username dan password anda'),
         backgroundColor: Colors.red,

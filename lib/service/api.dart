@@ -18,7 +18,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 const baseDemoUrl = "https://demo.app.indofarm.id/api/";
-const atanaUrl = "http://192.168.0.250:5050/api/login/signin";
+const atanaUrl = "http://192.168.0.250:5050/api/";
 
 class API {
   static SharedPreferences sharedPreferences;
@@ -59,16 +59,15 @@ class API {
   }
 
   static Future getItems(search) async {
-    final String url = "http://192.168.0.250:5050/api/Items/ProductDropDown";
     try {
-      final atanaResponse = await Dio().post(atanaUrl,
+      final atanaResponse = await Dio().post(atanaUrl + "login/signin",
           options: Options(headers: {
             "username": "FLUTTERAPPS",
             "password": "a0d2f3a1ebdcf8681c5fd16f3d28a9cc",
           }));
       if (atanaResponse.statusCode == 200) {
         var atanaToken = atanaResponse.data['token']['tokenKey'];
-        final response = await Dio().get(url,
+        final response = await Dio().get(atanaUrl + "Items/ProductDropDown",
             options: Options(headers: {
               'search': search,
               'Authorization': "Bearer $atanaToken",
@@ -77,40 +76,6 @@ class API {
           final item = atanaItemResultFromJson(jsonEncode(response.data));
           return item;
         }
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  static Future createForm(provinceId, cityId, districtId, itemId, item, type, date) async {
-    sharedPreferences = await SharedPreferences.getInstance();
-    final salesId = sharedPreferences.getInt('userId');
-    final token = sharedPreferences.getString('token');
-    final String url = baseDemoUrl + "form/create";
-    try {
-      final response = await Dio().post(url,
-          options: Options(
-              followRedirects: false,
-              validateStatus: (status) {
-                return status < 500;
-              },
-              headers: {
-                "Authorization": "Bearer $token",
-              }),
-          queryParameters: {
-            "province_id": provinceId,
-            "city_id": cityId,
-            "district_id": districtId,
-            "item_id": itemId,
-            "item": item,
-            "user_id": salesId,
-            "status": 1,
-            "type": type,
-            "estimated_date": date
-          });
-      if (response.statusCode == 200) {
-        print(response.data);
       }
     } catch (e) {
       print(e);
@@ -139,7 +104,7 @@ class API {
   static Future getTechnician() async {
     final String url = baseDemoUrl + "technician/final";
     sharedPreferences = await SharedPreferences.getInstance();
-    final name = sharedPreferences.getString('name');
+    final name = sharedPreferences.getString('username');
     try {
       final response = await Dio().get(url,
           options: Options(headers: {
@@ -150,8 +115,8 @@ class API {
         final technician = technicianResultFromJson(jsonEncode(response.data['result']));
         return technician;
       }
-    } on Exception catch (e) {
-      print(e);
+    } on DioError catch (e) {
+      print(e.response.statusMessage);
     }
   }
 
@@ -228,26 +193,6 @@ class API {
     }
   }
 
-  static Future updateForm(id, status, driver, vehicle, warehouse, departDate, returnDate) async {
-    final String url = baseDemoUrl + "form/update";
-    try {
-      final response = await Dio().put(url, queryParameters: {
-        "id": id,
-        "warehouse": warehouse,
-        "status": status,
-        "driver_id": driver,
-        "transport_id": vehicle,
-        "departure_date": departDate.toString(),
-        "return_date": returnDate.toString()
-      });
-      if (response.statusCode == 200) {
-        print(response.data);
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
   static Future updateFormFee(id, fee, feeDesc) async {
     final String url = baseDemoUrl + "fee";
     try {
@@ -259,22 +204,21 @@ class API {
       if (response.statusCode == 200) {
         print(response.data);
       }
-    } on Exception catch (e) {
-      print(e);
+    } on DioError catch (e) {
+      print(e.response.statusMessage);
     }
   }
 
   static Future getCOA(int coaId) async {
-    final String url = "http://192.168.0.250:5050/api/ChartOfAccounts/GetCOA";
     try {
-      final atanaResponse = await Dio().post(atanaUrl,
+      final atanaResponse = await Dio().post(atanaUrl + "login/signin",
           options: Options(headers: {
             "username": "FLUTTERAPPS",
             "password": "a0d2f3a1ebdcf8681c5fd16f3d28a9cc",
           }));
       if (atanaResponse.statusCode == 200) {
         final atanaToken = atanaResponse.data['token']['tokenKey'];
-        final response = await Dio().get(url,
+        final response = await Dio().get(atanaUrl + "ChartOfAccounts/GetCOA",
             options: Options(headers: {
               'COACategoryId': coaId,
               'Authorization': "Bearer $atanaToken",
@@ -292,23 +236,21 @@ class API {
   }
 
   static Future getWarehouse() async {
-    final url = "http://192.168.0.250:5050/api/Warehouses/GetWarehouse";
     try {
-      final atanaResponse = await Dio().post(atanaUrl,
+      final atanaResponse = await Dio().post(atanaUrl + "login/signin",
           options: Options(headers: {
             "username": "FLUTTERAPPS",
             "password": "a0d2f3a1ebdcf8681c5fd16f3d28a9cc",
           }));
       if (atanaResponse.statusCode == 200) {
         final atanaToken = atanaResponse.data['token']['tokenKey'];
-        final response = await Dio().get(url,
+        final response = await Dio().get(atanaUrl + "Warehouses/GetWarehouse",
             options: Options(headers: {
               'Authorization': "Bearer $atanaToken",
               'Accept': 'application/json',
               'Content-Type': 'application/json'
             }));
         if (response.statusCode == 200) {
-          print(response.data);
           final warehouse = warehouseFromJson(jsonEncode(response.data['warehouse']));
           return warehouse;
         }
@@ -319,16 +261,15 @@ class API {
   }
 
   static Future warehouseCheck(itemId) async {
-    final url = "http://192.168.0.250:5050/api/Items/GetItemStockWarehouseSimple";
     try {
-      final atanaResponse = await Dio().post(atanaUrl,
+      final atanaResponse = await Dio().post(atanaUrl + "login/signin",
           options: Options(headers: {
             "username": "FLUTTERAPPS",
             "password": "a0d2f3a1ebdcf8681c5fd16f3d28a9cc",
           }));
       if (atanaResponse.statusCode == 200) {
         final atanaToken = atanaResponse.data['token']['tokenKey'];
-        final response = await Dio().get(url,
+        final response = await Dio().get(atanaUrl + "Items/GetItemStockWarehouseSimple",
             options: Options(headers: {
               'Authorization': "Bearer $atanaToken",
               'itemId': itemId,
@@ -356,7 +297,6 @@ class API {
             'Content-Type': 'application/json'
           }));
       if (response.statusCode == 200) {
-        print(response.data);
         final user = userResultFromJson(jsonEncode(response.data['result']));
         return user;
       }
@@ -382,7 +322,6 @@ class API {
       }
     } on Exception catch (e) {
       print(e);
-      // TODO
     }
   }
 
@@ -393,14 +332,14 @@ class API {
         final province = provinceResultFromJson(jsonEncode(response.data['result']));
         return province;
       }
-    } on Exception catch (e) {
-      print(e);
+    } on DioError catch (e) {
+      print(e.response.statusMessage);
     }
   }
 
   static Future getCity(int provinceId) async {
     try {
-      final response = await Dio().get(baseDemoUrl + 'city?province_id=' + '$provinceId');
+      final response = await Dio().get(baseDemoUrl + 'city?province_id=$provinceId').timeout(Duration(seconds: 10));
       if (response.statusCode == 200) {
         final city = cityResultFromJson(jsonEncode(response.data['result']));
         return city;
@@ -412,7 +351,7 @@ class API {
 
   static Future getDistrict(int cityId) async {
     try {
-      final response = await Dio().get(baseDemoUrl + 'district?city_id=' + '$cityId');
+      final response = await Dio().get(baseDemoUrl + 'district?city_id=$cityId');
       if (response.statusCode == 200) {
         final district = districtResultFromJson(jsonEncode(response.data['result']));
         return district;
