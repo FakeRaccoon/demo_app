@@ -1,15 +1,15 @@
 // To parse this JSON data, do
 //
-//     final transport = transportFromJson(jsonString);
+//     final transportDetail = transportDetailFromJson(jsonString);
 
 import 'dart:convert';
 
-List<Transport> transportFromJson(String str) => List<Transport>.from(json.decode(str).map((x) => Transport.fromJson(x)));
+List<TransportDetail> transportDetailFromJson(String str) => List<TransportDetail>.from(json.decode(str).map((x) => TransportDetail.fromJson(x)));
 
-String transportToJson(List<Transport> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String transportDetailToJson(List<TransportDetail> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class Transport {
-  Transport({
+class TransportDetail {
+  TransportDetail({
     this.id,
     this.name,
     this.plat,
@@ -31,7 +31,7 @@ class Transport {
   DateTime returnDate;
   List<History> history;
 
-  factory Transport.fromJson(Map<String, dynamic> json) => Transport(
+  factory TransportDetail.fromJson(Map<String, dynamic> json) => TransportDetail(
     id: json["id"] == null ? null : json["id"],
     name: json["name"] == null ? null : json["name"],
     plat: json["plat"] == null ? null : json["plat"],

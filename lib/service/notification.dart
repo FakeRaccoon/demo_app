@@ -24,59 +24,40 @@ class NotificationAPI {
 
   static Future usernameNotification(String username, String message) async {
     try {
-      final response = await Dio().post(notificationUrl,
-          options: Options(headers: {
-            "Accept": "application/json",
+      final response = await http.post(Uri.https("onesignal.com", "api/v1/notifications"),
+          headers: {
+            "Content-Type": "application/json",
             "Authorization": "BASIC " + notificationKey,
-          }),
-          queryParameters: {
+          },
+          body: jsonEncode({
             "app_id": "956ae786-10ab-4d63-a9dd-82fb34904881",
             "include_external_user_ids": [username],
             "channel_for_external_user_ids": "push",
             "data": {"foo": "bar"},
             "headings": {"en": "Notifikasi baru"},
             "contents": {"en": message}
-          });
+          }));
       if (response.statusCode == 200) {
         print('notification sent');
-        // await firestore
-        //     .collection('Users')
-        //     .doc('noRole')
-        //     .collection('users')
-        //     .doc(username)
-        //     .collection('notifications')
-        //     .add({
-        //   'title': "Notifikasi baru",
-        //   'content': message,
-        //   'time': DateTime.now(),
-        //   'read': false,
-        // });
-        firebaseNotification(username, 'noRole', message);
       }
     } on DioError catch (e) {
-      await firestore.collection('Users').doc(username).collection('notifications').add({
-        'title': "Notifikasi baru",
-        'content': message,
-        'time': DateTime.now(),
-        'read': false,
-      });
-      print(e.response.statusMessage);
+      print(e.response.data);
     }
   }
 
   static Future roleNotification(String role, String message) async {
     try {
-      final response = await Dio().post(notificationUrl,
-          options: Options(headers: {
-            "Accept": "application/json",
+      final response = await http.post(Uri.https("onesignal.com", "api/v1/notifications"),
+          headers: {
+            "Authorization": "BASIC " + notificationKey,
             "Content-Type": "application/json",
-            "Authorization": "Basic " + notificationKey,
-          }),
-          queryParameters: {
+          },
+          body: jsonEncode({
             "app_id": "956ae786-10ab-4d63-a9dd-82fb34904881",
             "channel_for_external_user_ids": "push",
-            "tags": [
+            "filters": [
               {
+                "field": "tag",
                 "key": "userRole",
                 "relation": "=",
                 "value": role,
@@ -85,12 +66,12 @@ class NotificationAPI {
             "data": {"foo": "bar"},
             "headings": {"en": "Notifikasi baru"},
             "contents": {"en": message}
-          });
+          }));
       if (response.statusCode == 200) {
         print('role notification sent');
       }
     } on DioError catch (e) {
-      print(e.response.statusMessage);
+      print(e.response.data);
     }
   }
 }

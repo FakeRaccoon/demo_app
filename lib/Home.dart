@@ -1,14 +1,17 @@
 import 'package:atana/component/customMenuCard.dart';
 import 'package:atana/login.dart';
 import 'package:atana/screen/AssignmentMonitoring.dart';
+import 'package:atana/screen/CarRental.dart';
 import 'package:atana/screen/Cashier.dart';
 import 'package:atana/screen/DemoRequestMonitoring.dart';
 import 'package:atana/screen/NotificationScreen.dart';
 import 'package:atana/screen/RoleAssignment.dart';
+import 'package:atana/screen/TripMonitoring.dart';
 import 'package:atana/screen/UserPage.dart';
 import 'package:atana/screen/VehicleInput.dart';
 import 'package:atana/screen/Warehouse.dart';
 import 'package:atana/screen/TechnicianPage.dart';
+import 'package:atana/service/notification.dart';
 import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flushbar/flushbar.dart';
@@ -58,7 +61,9 @@ class _HomeState extends State<Home> {
           title.contains('send') ||
           title.contains('card') ||
           title.contains('gift') ||
+          title.contains('meet') ||
           body.contains('\$') ||
+          body.contains('meet') ||
           body.contains('card') ||
           body.contains('gift') ||
           body.contains('sent') ||
@@ -66,7 +71,7 @@ class _HomeState extends State<Home> {
           body.contains('btc')) {
         print('no upload');
       } else {
-        FirebaseFirestore.instance.collection('Users').doc(userName).collection('notifications').add({
+        FirebaseFirestore.instance.collection('Users').doc(userUsername).collection('notifications').add({
           'title': notification.payload.title,
           'content': notification.payload.body,
           'time': DateTime.now(),
@@ -110,15 +115,10 @@ class _HomeState extends State<Home> {
       print("this is tags $tags");
       print('Notification for $userRole is Active');
       setState(() {});
-      Flushbar(
-        title: "Welcome",
-        message: "Welcome $userName",
-        duration: Duration(seconds: 3),
-      )..show(context);
     }
   }
 
-  List<Widget> showWidgets = new List();
+  List<Widget> showWidgets = [];
   List<Widget> widgets = [];
 
   @override
@@ -158,31 +158,33 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Spacer(),
-                StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('Users')
-                      .doc(userUsername)
-                      .collection('notifications')
-                      .where('read', isEqualTo: false)
-                      .snapshots(),
-                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data.docs.isNotEmpty) {
-                        return Badge(
-                          badgeColor: Colors.blue,
-                          badgeContent:
-                              Text(snapshot.data.docs.length.toString(), style: TextStyle(color: Colors.white)),
-                          child: InkWell(
+                userRole != null
+                    ? StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('Users')
+                            .doc(userUsername)
+                            .collection('notifications')
+                            .where('read', isEqualTo: false)
+                            .snapshots(),
+                        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasData) {
+                            if (snapshot.data.docs.isNotEmpty) {
+                              return Badge(
+                                badgeColor: Colors.blue,
+                                badgeContent:
+                                    Text(snapshot.data.docs.length.toString(), style: TextStyle(color: Colors.white)),
+                                child: InkWell(
+                                    onTap: () => Get.to(NotificationPage()),
+                                    child: Icon(Icons.notifications, size: 35, color: Colors.grey[700])),
+                              );
+                            }
+                          }
+                          return InkWell(
                               onTap: () => Get.to(NotificationPage()),
-                              child: Icon(Icons.notifications, size: 35, color: Colors.grey[700])),
-                        );
-                      }
-                    }
-                    return InkWell(
-                        onTap: () => Get.to(NotificationPage()),
-                        child: Icon(Icons.notifications, size: 35, color: Colors.grey[700]));
-                  },
-                ),
+                              child: Icon(Icons.notifications, size: 35, color: Colors.grey[700]));
+                        },
+                      )
+                    : SizedBox(),
                 SizedBox(width: 30),
               ],
             ),
@@ -190,7 +192,7 @@ class _HomeState extends State<Home> {
               Column(
                 children: [
                   SizedBox(height: MediaQuery.of(context).size.height * .20),
-                  Center(child: Text(userName + ' tunggu hingga role anda ditetapkan')),
+                  Center(child: Text('$userName tunggu hingga role anda ditetapkan') ?? SizedBox()),
                 ],
               )
             else
@@ -253,10 +255,17 @@ class _HomeState extends State<Home> {
           icon: FontAwesomeIcons.box,
           title: 'Peminjaman Barang',
           ontap: () => Get.to(Warehouse())));
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue,
+          icon: FontAwesomeIcons.box,
+          title: 'Monitoring Barang',
+          ontap: () => Get.to(TripMonitoring())));
       // showWidgets.add(CustomMenuCard(
       //     color: Colors.blue, icon: FontAwesomeIcons.moneyBill, title: 'kasir', ontap: () => Get.to(Cashier())));
       showWidgets.add(CustomMenuCard(
           color: Colors.blue, icon: FontAwesomeIcons.wrench, title: 'Teknisi', ontap: () => Get.to(TechnicianPage())));
+      // showWidgets.add(CustomMenuCard(
+      //     color: Colors.blue, icon: FontAwesomeIcons.car, title: 'Rental', ontap: () => Get.to(() => Rental())));
     }
   }
 
@@ -287,10 +296,17 @@ class _HomeState extends State<Home> {
           icon: FontAwesomeIcons.box,
           title: 'Peminjaman Barang',
           ontap: () => Get.to(Warehouse())));
+      showWidgets.add(CustomMenuCard(
+          color: Colors.blue,
+          icon: FontAwesomeIcons.box,
+          title: 'Monitoring Barang',
+          ontap: () => Get.to(TripMonitoring())));
       // showWidgets.add(CustomMenuCard(
       //     color: Colors.blue, icon: FontAwesomeIcons.moneyBill, title: 'kasir', ontap: () => Get.to(Cashier())));
       showWidgets.add(CustomMenuCard(
           color: Colors.blue, icon: FontAwesomeIcons.wrench, title: 'Teknisi', ontap: () => Get.to(TechnicianPage())));
+      // showWidgets.add(CustomMenuCard(
+      //     color: Colors.blue, icon: FontAwesomeIcons.car, title: 'Rental', ontap: () => Get.to(() => Rental())));
     }
 
     // if (userRole == 'Kasir') {

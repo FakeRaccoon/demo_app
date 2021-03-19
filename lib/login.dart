@@ -1,5 +1,6 @@
 import 'package:atana/Home.dart';
 import 'package:atana/body.dart';
+import 'package:atana/root.dart';
 import 'package:atana/screen/Register.dart';
 import 'package:atana/service/api.dart';
 import 'package:dio/dio.dart';
@@ -95,12 +96,13 @@ class _LoginState extends State<Login> {
                     controller: passController,
                     textAlignVertical: TextAlignVertical.center,
                     decoration: InputDecoration(
-                        hintText: 'Password',
-                        prefixIcon: Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          onPressed: _toggle,
-                          icon: isObscured == false ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
-                        )),
+                      hintText: 'Password',
+                      prefixIcon: Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        onPressed: _toggle,
+                        icon: isObscured == false ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
+                      ),
+                    ),
                   ),
                   SizedBox(height: 20),
                   ButtonTheme(
@@ -165,7 +167,7 @@ class _LoginState extends State<Login> {
           _name = data['name'];
           setUserInfoPreference().then((value) => Center(child: CircularProgressIndicator())).whenComplete(() {
             Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (BuildContext context) => Body()), (Route<dynamic> route) => false);
+                MaterialPageRoute(builder: (BuildContext context) => Root()), (Route<dynamic> route) => false);
           });
         });
       }

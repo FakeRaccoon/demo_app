@@ -113,7 +113,7 @@ class _BodyState extends State<Body> {
       }
       if (selectedPage == 1) {
         FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
-        FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+        FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
       }
       if (selectedPage == 2) {
         FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);

@@ -20,6 +20,7 @@ class FormResult {
     this.itemMeasureId,
     this.item,
     this.warehouse,
+    this.warehouseDestination,
     this.warehouseId,
     this.fee,
     this.transport,
@@ -30,6 +31,8 @@ class FormResult {
     this.status,
     this.rejectReason,
     this.image,
+    this.codeImage,
+    this.returnImage,
     this.departureDate,
     this.returnDate,
     this.createdAt,
@@ -46,6 +49,7 @@ class FormResult {
   String item;
   int warehouseId;
   String warehouse;
+  String warehouseDestination;
   List<Fee> fee;
   Transport transport;
   String driver;
@@ -55,6 +59,8 @@ class FormResult {
   String status;
   dynamic rejectReason;
   String image;
+  String codeImage;
+  String returnImage;
   DateTime departureDate;
   DateTime returnDate;
   DateTime createdAt;
@@ -71,6 +77,7 @@ class FormResult {
         item: json["item"] == null ? null : json["item"],
         warehouseId: json["warehouse_id"] == null ? null : json["warehouse_id"],
         warehouse: json["warehouse"] == null ? null : json["warehouse"],
+        warehouseDestination: json["warehouse_destination"] == null ? null : json["warehouse_destination"],
         fee: json["fee"] == null ? null : List<Fee>.from(json["fee"].map((x) => Fee.fromJson(x))),
         transport: json["transport"] == null ? null : Transport.fromJson(json["transport"]),
         driver: json["driver"],
@@ -82,6 +89,8 @@ class FormResult {
         status: json["status"] == null ? null : json["status"],
         rejectReason: json["reject_reason"] == null ? null : json["reject_reason"],
         image: json["image"] == null ? null : json["image"],
+        codeImage: json["code_image"] == null ? null : json["code_image"],
+        returnImage: json["return_image"] == null ? null : json["return_image"],
         departureDate: json["departure_date"] == null ? null : DateTime.parse(json["departure_date"]),
         returnDate: json["return_date"] == null ? null : DateTime.parse(json["return_date"]),
         createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
@@ -99,6 +108,7 @@ class FormResult {
         "item": item == null ? null : item,
         "warehouse_id": warehouseId == null ? null : warehouseId,
         "warehouse": warehouse == null ? null : warehouse,
+        "warehouse_destination": warehouseDestination == null ? null : warehouseDestination,
         "fee": fee == null ? null : List<dynamic>.from(fee.map((x) => x.toJson())),
         "transport": transport == null ? null : transport.toJson(),
         "driver": driver,
@@ -108,6 +118,8 @@ class FormResult {
         "status": status == null ? null : status,
         "reject_reason": rejectReason == null ? null : rejectReason,
         "image": image == null ? null : image,
+        "code_image": codeImage == null ? null : codeImage,
+        "return_image": returnImage == null ? null : returnImage,
         "departure_date": departureDate == null ? null : departureDate.toIso8601String(),
         "return_date": returnDate == null ? null : returnDate.toIso8601String(),
         "created_at": createdAt == null ? null : createdAt.toIso8601String(),
@@ -306,7 +318,7 @@ class Technician {
   });
 
   int id;
-  String formId;
+  int formId;
   String name;
   String task;
   String warehouse;

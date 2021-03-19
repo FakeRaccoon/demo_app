@@ -1,6 +1,9 @@
 import 'package:atana/component/CustomDenseButton.dart';
 import 'package:atana/login.dart';
+import 'package:atana/service/api.dart';
+import 'package:atana/service/notification.dart';
 import 'package:dio/dio.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -33,18 +36,32 @@ class _RegisterState extends State<Register> {
   }
 
   Future register(name, username, password) async {
-    final url = "http://10.0.2.2:8000/api/register";
     try {
-      final response = await Dio().post(url, queryParameters: {
+      final response = await Dio().post(baseDemoUrl + "register", queryParameters: {
         "name": name,
         "username": username,
         "password": password,
       });
       if (response.statusCode == 200) {
-        print(response.data);
+        Flushbar(
+          title: "Berhasil",
+          message: "Berhasil register",
+          duration: Duration(seconds: 3),
+        )..show(context).then((value) => Navigator.pop(context));
+        NotificationAPI.roleNotification('superuser', 'User baru $name telah melakukan registrasi');
       }
-    } catch (e) {
-      print(e);
+    } on DioError catch (e) {
+      if (e.response.data.toString().toLowerCase().contains('duplicate')) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Username ini telah digunakan'),
+          backgroundColor: Colors.red,
+        ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(e.response.statusMessage),
+          backgroundColor: Colors.red,
+        ));
+      }
     }
   }
 
@@ -134,7 +151,7 @@ class _RegisterState extends State<Register> {
                             nameController.text,
                             usernameController.text,
                             passwordController.text,
-                          ).whenComplete(() => Get.to(Login()));
+                          );
                         }
                       },
                       color: Colors.blue,

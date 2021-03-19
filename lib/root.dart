@@ -22,14 +22,13 @@ class _RootState extends State<Root> {
 
   checkLoginStatus() async {
     sharedPreferences = await SharedPreferences.getInstance();
+    print("this is token ${sharedPreferences.get("token")}");
     if (sharedPreferences.getString("token") == null) {
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (BuildContext context) => Login()),
-          (Route<dynamic> route) => false);
+          MaterialPageRoute(builder: (BuildContext context) => Login()), (Route<dynamic> route) => false);
     } else {
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (BuildContext context) => Body()),
-          (Route<dynamic> route) => false);
+          MaterialPageRoute(builder: (BuildContext context) => Body()), (Route<dynamic> route) => false);
     }
   }
 

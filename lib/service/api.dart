@@ -10,11 +10,11 @@ import 'package:atana/model/log_model.dart';
 import 'package:atana/model/notification_model.dart';
 import 'package:atana/model/province_model.dart';
 import 'package:atana/model/technician_task.dart';
+import 'package:atana/model/transport_detail.dart';
 import 'package:atana/model/transport_model.dart';
 import 'package:atana/model/user_model.dart';
 import 'package:atana/model/warehouse_check_model.dart';
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 const baseDemoUrl = "https://demo.app.indofarm.id/api/";
@@ -25,12 +25,15 @@ class API {
 
   static Future createLog(String activity) async {
     try {
-      final response = await Dio().post(baseDemoUrl + 'log/create', queryParameters: {'activity': activity});
+      final response = await Dio().post(
+        baseDemoUrl + 'log/create',
+        queryParameters: {'activity': activity},
+      );
       if (response.statusCode == 200) {
         print('Log created:  ${response.data['result']}');
       }
-    } on Exception catch (e) {
-      print(e);
+    } on DioError catch (e) {
+      print(e.response.data);
     }
   }
 
@@ -38,20 +41,19 @@ class API {
     try {
       final response = await Dio().get(baseDemoUrl + 'log');
       if (response.statusCode == 200) {
-        print('Log created:  ${response.data['result']}');
         final log = logResultFromJson(jsonEncode(response.data['result']));
         return log;
       }
-    } on Exception catch (e) {
-      print(e);
+    } on DioError catch (e) {
+      print(e.response.data);
     }
   }
 
   static Future getNotification() async {
     final String url = 'http://10.0.2.2:8000/api/notification';
-    final response = await http.get(url);
+    final response = await Dio().get(url);
     if (response.statusCode == 200) {
-      final decode = jsonDecode(response.body);
+      final decode = jsonDecode(response.data);
       print(decode);
       final notification = notificationResultFromJson(jsonEncode(decode['result']));
       return notification;
@@ -82,12 +84,13 @@ class API {
     }
   }
 
-  static Future assignTechnician(technician, formId, item, warehouse, departDate, returnDate) async {
+  static Future assignTechnician(name, username, formId, item, warehouse, departDate, returnDate) async {
     final String url = baseDemoUrl + "technician/create";
     try {
       final response = await Dio().post(url, queryParameters: {
         "form_id": formId,
-        "name": technician,
+        "name": name,
+        "username": username,
         "warehouse": warehouse,
         "task": "Ambil barang $item",
         "depart": departDate,
@@ -96,8 +99,8 @@ class API {
       if (response.statusCode == 200) {
         print(response.data);
       }
-    } on Exception catch (e) {
-      print(e);
+    } on DioError catch (e) {
+      print(e.response.data);
     }
   }
 
@@ -106,25 +109,24 @@ class API {
     sharedPreferences = await SharedPreferences.getInstance();
     final name = sharedPreferences.getString('username');
     try {
-      final response = await Dio().get(url,
-          options: Options(headers: {
-            'name': name,
-          }));
+      final response = await Dio().get(url, queryParameters: {
+        "username": name,
+      });
       if (response.statusCode == 200) {
         print(response.data['result']);
-        final technician = technicianResultFromJson(jsonEncode(response.data['result']));
+        final technician = technicianFromJson(jsonEncode(response.data['result']));
         return technician;
       }
     } on DioError catch (e) {
-      print(e.response.statusMessage);
+      print(e.response.data);
     }
   }
 
   static Future deleteTechnician(id) async {
     final String url = baseDemoUrl + "technician/delete/$id";
-    final response = await http.delete(url);
+    final response = await Dio().delete(url);
     if (response.statusCode == 200) {
-      print(response.body);
+      print(response.data);
     }
   }
 
@@ -139,25 +141,40 @@ class API {
             'status': status,
           }));
       if (response.statusCode == 200) {
+        print(response.data);
         final form = formResultFromJson(jsonEncode(response.data['result']));
         return form;
-      } else {
-        print(response.data);
       }
-    } catch (e) {
-      print(e);
+    } on DioError catch (e) {
+      print(e.response.data);
+    }
+  }
+
+  static Future getAllForm() async {
+    final String url = baseDemoUrl + "form/all";
+    sharedPreferences = await SharedPreferences.getInstance();
+    final token = sharedPreferences.getString('token');
+    try {
+      final response = await Dio().get(url, options: Options(headers: {'Authorization': 'Bearer $token'}));
+      if (response.statusCode == 200) {
+        final form = formResultFromJson(jsonEncode(response.data['result']));
+        return form;
+      }
+    } on DioError catch (e) {
+      print(e.response.data);
     }
   }
 
   static Future getFormId(int id) async {
-    final String url = "http://10.0.2.2:8000/api/form/$id";
+    var url = "http://10.0.2.2:8000/api/form/$id";
     sharedPreferences = await SharedPreferences.getInstance();
     final token = sharedPreferences.getString('token');
-    final response = await http.get(url, headers: {
-      'Authorization': "Bearer $token",
-    });
+    final response = await Dio().get(url,
+        options: Options(headers: {
+          'Authorization': "Bearer $token",
+        }));
     if (response.statusCode == 200) {
-      var decode = jsonDecode(response.body);
+      var decode = jsonDecode(response.data);
       final List<FormResult> form = formResultFromJson(jsonEncode(decode['result']));
       return form;
     }
@@ -173,8 +190,8 @@ class API {
       if (response.statusCode == 200) {
         print(response.data);
       }
-    } catch (e) {
-      print(e);
+    } on DioError catch (e) {
+      print(e.response.data);
     }
   }
 
@@ -279,8 +296,8 @@ class API {
           return warehouseCheck;
         }
       }
-    } on Exception catch (e) {
-      print(e);
+    } on DioError catch (e) {
+      print(e.response.data);
     }
   }
 
@@ -300,13 +317,14 @@ class API {
         final user = userResultFromJson(jsonEncode(response.data['result']));
         return user;
       }
-    } on Exception catch (e) {
-      print(e);
+    } on DioError catch (e) {
+      print(e.response.data);
     }
   }
 
   static Future getTransport() async {
     final String url = baseDemoUrl + "transport";
+    // final String url = "http://10.0.2.2:8000/api/transport";
     sharedPreferences = await SharedPreferences.getInstance();
     final token = sharedPreferences.getString('token');
     try {
@@ -317,11 +335,34 @@ class API {
             'Content-Type': 'application/json'
           }));
       if (response.statusCode == 200) {
-        final transport = transportResultFromJson(jsonEncode(response.data['result']));
+        print(response.data);
+        final transport = transportFromJson(jsonEncode(response.data['result']));
         return transport;
       }
-    } on Exception catch (e) {
-      print(e);
+    } on DioError catch (e) {
+      print(e.response.data);
+    }
+  }
+
+  static Future getTransportDetail(int id) async {
+    final String url = baseDemoUrl + "transport/$id";
+    // final String url = "http://10.0.2.2:8000/api/transport/$id";
+    sharedPreferences = await SharedPreferences.getInstance();
+    final token = sharedPreferences.getString('token');
+    try {
+      final response = await Dio().get(url,
+          options: Options(headers: {
+            'Authorization': "Bearer $token",
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }));
+      if (response.statusCode == 200) {
+        print(response.data);
+        final transport = transportDetailFromJson(jsonEncode(response.data['result']));
+        return transport;
+      }
+    } on DioError catch (e) {
+      print(e.response.statusMessage);
     }
   }
 

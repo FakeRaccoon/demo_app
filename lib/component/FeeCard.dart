@@ -39,13 +39,19 @@ class _FeeFormState extends State<FeeForm> {
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: TextFormField(
+                  onChanged: (String val) {
+                    widget.feeData.fee = val;
+                    print(val);
+                  },
                   initialValue: widget.feeData.fee,
-                  onSaved: (val) => widget.feeData.fee = val,
+                  onSaved: (val) {
+                    // widget.feeData.fee = val;
+                    // print(val);
+                  },
                   validator: (val) => val.isNotEmpty ? null : 'Isi perkiraan biaya',
                   keyboardType: TextInputType.number,
-                  inputFormatters: [CurrencyTextInputFormatter(decimalDigits: 0)],
+                  inputFormatters: [CurrencyTextInputFormatter(decimalDigits: 0, symbol: 'Rp ')],
                   decoration: InputDecoration(
-                    prefix: Text('Rp '),
                     hintText: 'Biaya',
                   ),
                 ),

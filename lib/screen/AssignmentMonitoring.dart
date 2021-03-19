@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:atana/component/CustomDenseButton.dart';
 import 'package:atana/component/Fee.dart';
@@ -6,8 +7,12 @@ import 'package:atana/component/FeeCard.dart';
 import 'package:atana/component/cusomTF.dart';
 import 'package:atana/component/customTFsmall.dart';
 import 'package:atana/model/WAREHOUSE.dart';
+import 'package:atana/model/filtered_warehouse_model.dart';
+import 'package:atana/model/warehouse_check_model.dart';
 import 'package:atana/service/api.dart';
 import 'package:atana/service/notification.dart';
+import 'package:dio/dio.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -56,9 +61,7 @@ class _DemoAssignmentMonitoringState extends State<DemoAssignmentMonitoring> {
         title: Text('Monitoring penugasan'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
         ),
       ),
       body: FutureBuilder(
@@ -68,7 +71,7 @@ class _DemoAssignmentMonitoringState extends State<DemoAssignmentMonitoring> {
             if (snapshot.data.isEmpty) {
               return Scaffold(
                 body: Center(
-                  child: Text('No data'),
+                  child: Text('Tidak ada permintaan penugasan baru'),
                 ),
               );
             }
@@ -76,7 +79,10 @@ class _DemoAssignmentMonitoringState extends State<DemoAssignmentMonitoring> {
               children: [
                 Container(
                   height: MediaQuery.of(context).size.height * .25,
-                  color: Colors.blue,
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
+                  ),
                 ),
                 ListView.builder(
                   shrinkWrap: true,
@@ -89,37 +95,40 @@ class _DemoAssignmentMonitoringState extends State<DemoAssignmentMonitoring> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                         elevation: 4,
                         child: Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: ListTile(
-                            onTap: () {
-                              setItemInfo(form.id, form.item.atanaName, form.item.id);
-                            },
-                            leading: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(DateFormat('d').format(form.estimatedDate),
-                                    style: GoogleFonts.sourceSansPro(fontSize: 20, fontWeight: FontWeight.bold)),
-                                Text(DateFormat('MMM').format(form.estimatedDate),
-                                    style: GoogleFonts.sourceSansPro(fontSize: 20, fontWeight: FontWeight.bold)),
-                              ],
-                            ),
-                            title: Text(
-                              form.item.atanaName,
-                              style: GoogleFonts.openSans(fontWeight: FontWeight.bold, fontSize: 18),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                            subtitle: Wrap(
-                              children: [
-                                Text(
-                                  form?.district == null ? form.city.name : '${form.city.name}, ${form.district.name}',
-                                  style: GoogleFonts.openSans(fontSize: 16),
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(DateFormat('d MMM y').format(form.estimatedDate)),
+                              SizedBox(height: 10),
+                              Divider(thickness: 1),
+                              ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                onTap: () {
+                                  print(form.itemId);
+                                  setItemInfo(form.id, form.item, form.itemId);
+                                },
+                                title: Text(
+                                  form.item,
+                                  style: GoogleFonts.openSans(fontWeight: FontWeight.bold, fontSize: 18),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                 ),
-                              ],
-                            ),
-                            trailing: Icon(Icons.arrow_forward_ios),
+                                subtitle: Wrap(
+                                  children: [
+                                    Text(
+                                      form?.district == null
+                                          ? form.city.name
+                                          : '${form.city.name}, ${form.district.name}',
+                                      style: GoogleFonts.openSans(fontSize: 16),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                                trailing: Icon(Icons.arrow_forward_ios),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -207,16 +216,90 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
     sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
       docId = sharedPreferences.getInt('formId');
-      itemId = sharedPreferences.getInt('itemId');
       item = sharedPreferences.getString('itemName');
+      itemId = sharedPreferences.getInt('itemId');
     });
     print(sharedPreferences.getInt('formId'));
+    fetch();
+  }
+
+  Future updateForm(id, status, driver, vehicle, warehouse, departDate, returnDate) async {
+    final String url = baseDemoUrl + "form/update";
+    try {
+      final response = await Dio().post(url, queryParameters: {
+        "id": id,
+        "warehouse_id": warehouseId,
+        "warehouse": warehouse,
+        "status": status,
+        "driver_id": driver,
+        "transport_id": vehicle,
+        "departure_date": departDate.toString(),
+        "return_date": returnDate.toString()
+      });
+      if (response.statusCode == 200) {
+        print(response.data);
+        NotificationAPI.roleNotification("Admin", "Ada permintaan penugasan demo baru!");
+        NotificationAPI.roleNotification("Direktur", "Ada permintaan penugasan demo baru!");
+        fees.forEach((element) {
+          var parsed = element.feeData.fee.replaceAll(",", "");
+          var parsedd = parsed.replaceAll('Rp', "");
+          var f = int.tryParse(parsedd);
+          print('$f = ${element.feeData.feeDesc}');
+          API.updateFormFee(docId, f, element.feeData.feeDesc);
+        });
+        tempMap.toList().forEach((element) {
+          print(element['name']);
+          print(element['username']);
+          API.assignTechnician(
+            element['name'],
+            element['username'],
+            docId,
+            sharedPreferences.getString('itemName'),
+            warehouseController.text,
+            departDate,
+            returnDate,
+          );
+        });
+        // temp.toSet().toList().forEach((element) {
+        //   API.assignTechnician(
+        //     element,
+        //     docId,
+        //     sharedPreferences.getString('itemName'),
+        //     warehouseController.text,
+        //     departDate,
+        //     returnDate,
+        //   );
+        // });
+        isSwitched = false;
+        driverController.clear();
+        vehicleController.clear();
+        departDateController.clear();
+        returnDateController.clear();
+        setState(() {
+          fees.clear();
+        });
+        Flushbar(
+          title: 'Berhasil',
+          message: 'Data berhasil diajukan',
+          duration: Duration(seconds: 3),
+        )..show(context).then((value) => Navigator.popUntil(context, (route) => route.isFirst));
+      }
+    } on DioError catch (e) {
+      print(e.response.data);
+      Flushbar(
+        title: "Gagal",
+        message: 'Data gagal diajukan, coba beberapa saat lagi',
+        backgroundColor: Colors.red,
+        duration: Duration(seconds: 3),
+      )..show(context);
+    }
   }
 
   List<UserResult> user = [];
   List<FormResult> form = [];
 
   List temp = [];
+  List<Map<String, dynamic>> tempMap = [];
 
   List techDummy = [];
   List techIndex = [];
@@ -232,6 +315,7 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
   String item;
   int driverId;
   int transportId;
+  int warehouseId;
 
   var vehicleController = TextEditingController();
   var driverController = TextEditingController();
@@ -256,7 +340,7 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
   }
 
   void onAddForm() {
-    if (fees.length > 3) {
+    if (fees.length >= 3) {
       return;
     }
     setState(() {
@@ -273,29 +357,7 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
       var allValid = true;
       fees.forEach((form) => allValid = allValid && form.isValid());
       if (allValid) {
-        API.updateForm(docId, 4, driverId, transportId, departDate, returnDate).whenComplete(() {
-          Notif.roleNotification("Admin", "Ada permintaan penugasan demo baru!");
-          Notif.roleNotification("Direktur", "Ada permintaan penugasan demo baru!");
-          fees.forEach((element) {
-            var parsed = element.feeData.fee.replaceAll(",", "");
-            var f = int.tryParse(parsed);
-            print('$f = ${element.feeData.feeDesc}');
-            API.updateFormFee(docId, f, element.feeData.feeDesc);
-          });
-          temp.toSet().toList().forEach((element) {
-            API.assignTechnician(element, docId, sharedPreferences.getString('itemName'), departDate, returnDate);
-          });
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Data berhasil diajukan')));
-          isSwitched = false;
-          driverController.clear();
-          vehicleController.clear();
-          departDateController.clear();
-          returnDateController.clear();
-          setState(() {
-            fees.clear();
-          });
-          Get.off(DemoAssignmentMonitoring());
-        });
+        updateForm(docId, 4, driverId, transportId, warehouseController.text, departDate, returnDate);
         // var data = fees.map((it) => it.feeData).toList();
         // Navigator.push(
         //   context,
@@ -321,6 +383,84 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
       }
     }
   }
+
+  List<Warehouse> warehouse = [];
+  List<WarehouseCheckResult> warehouseCheck = [];
+
+  Future fetch() async {
+    API.getWarehouse().then((value) => warehouse = value).whenComplete(() {
+      setState(() {});
+    });
+    API.warehouseCheck(sharedPreferences.getInt('itemId')).then((value) => warehouseCheck = value).whenComplete(() {
+      if (warehouseCheck.isEmpty) {
+        setState(() {
+          nb = "barang ini tidak ada di gudang manapun";
+        });
+        Flushbar(
+          title: "Perhatian",
+          message: "Barang ini tidak ada di gudang manapun!",
+          duration: Duration(seconds: 5),
+          backgroundColor: Colors.red,
+        )..show(context);
+      }
+      setState(() {});
+    });
+  }
+
+  Future checkedWarehouse;
+
+  Future check() async {
+    if (warehouse.isNotEmpty && warehouseCheck.isNotEmpty) {
+      filteredWarehouse.clear();
+      if (warehouseCheck.map((e) => e.warehouseId).toList().contains(64)) {
+        setState(() {
+          warehouseId = 64;
+          warehouseController.text = "Gudang Demo";
+        });
+      }
+      warehouseCheck.forEach((element) {
+        final found = warehouse.where((e) => e.warehouseId == element.warehouseId);
+        filteredWarehouse.add({
+          'id': found.first.warehouseId.toInt(),
+          'name': found.first.warehouseName,
+          'code': found.first.warehouseCode,
+          'stock': element.qtyReadyBalance.toInt(),
+        });
+      });
+    }
+    if (filteredWarehouse.isNotEmpty) {
+      print(jsonEncode(filteredWarehouse));
+      final filter = filteredWarehouseFromJson(jsonEncode(filteredWarehouse));
+      return filter;
+    }
+  }
+
+  List<Map<String, dynamic>> filteredWarehouse = [];
+
+  List<FilteredWarehouse> warehouseFilter = [];
+
+  Future checkWarehouse() async {
+    var itemId = sharedPreferences = await SharedPreferences.getInstance();
+    if (itemId != null) {
+      API.warehouseCheck(sharedPreferences.getInt('itemId')).then((value) => warehouseCheck = value).whenComplete(() {
+        print(warehouseCheck.map((e) => e.warehouseId).toList());
+        var availableWarehouse = warehouse.where((element) => element.warehouseId == 7);
+        print(availableWarehouse.first.warehouseName);
+        if (warehouseCheck.map((e) => e.warehouseId).toList().contains(64)) {
+          setState(() {
+            warehouseController.text = 'Gudang Demo';
+          });
+        } else {
+          setState(() {
+            nb = '*barang ini tidak ada di gudang demo';
+          });
+        }
+      });
+    }
+  }
+
+  String nb = '';
+  List filteredWarehouseFinal = [];
 
   @override
   Widget build(BuildContext context) {
@@ -354,14 +494,14 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Isi data penugasan demo',
-                        style: GoogleFonts.openSans(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 20),
-                      Text(
-                        'Gudang',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      // Text('Isi data penugasan demo',
+                      //     style: GoogleFonts.openSans(fontSize: 16, fontWeight: FontWeight.bold)),
+                      // SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Text('Gudang ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          Text(nb),
+                        ],
                       ),
                       SizedBox(height: 10),
                       Padding(
@@ -369,7 +509,13 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
                         child: TextFormField(
                           controller: warehouseController,
                           readOnly: true,
-                          onTap: () => warehouseBottomSheet(),
+                          validator: (val) => val.isNotEmpty ? null : 'Pilih gudang',
+                          onTap: () {
+                            warehouseSearch = '';
+                            check().then((value) => warehouseFilter = value).whenComplete(() {
+                              warehouseBottomSheet();
+                            });
+                          },
                           decoration: InputDecoration(hintText: 'Pilih Gudang'),
                         ),
                       ),
@@ -431,7 +577,7 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
                                   validator: isSwitched == true
                                       ? (String value) {
                                           if (value.isEmpty) {
-                                            return 'Isi sopir';
+                                            return 'Pilih sopir';
                                           }
                                         }
                                       : null,
@@ -453,7 +599,7 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
                       CustomTextField(
                         validator: (String value) {
                           if (value.isEmpty) {
-                            return 'Provinsi tidak boleh kosong';
+                            return 'Pilih kendaraan';
                           }
                         },
                         ontap: () => transportBottomSheet(),
@@ -520,7 +666,7 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
                   return fees[index];
                 },
               ),
-              FlatButton(
+              TextButton(
                   onPressed: () {
                     onAddForm();
                     setState(() {
@@ -540,13 +686,25 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
                 title: 'Ajukan',
                 onTap: () {
                   if (formKey.currentState.validate() && fees.isNotEmpty) {
-                    print(docId);
-                    onSave();
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('Tambahkan biaya perjalanan'),
+                    if (filteredWarehouseFinal.contains(warehouseController.text.toLowerCase())) {
+                      onSave();
+                      print('Ok bro');
+                    } else {
+                      Flushbar(
+                        title: "Perhatian!",
+                        message: "Barang tidak ada di gudang manapun",
+                        duration: Duration(seconds: 5),
+                        backgroundColor: Colors.red,
+                      )..show(context);
+                    }
+                  }
+                  if (fees.isEmpty) {
+                    Flushbar(
+                      title: 'Perhatian!',
+                      message: "Tambahkan biaya perjalanan",
+                      duration: Duration(seconds: 2),
                       backgroundColor: Colors.red,
-                    ));
+                    )..show(context);
                   }
                 },
               )
@@ -586,7 +744,9 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
                                 });
                                 if (value == false) {
                                   temp.remove(snapshot.data[i].name);
+                                  tempMap.removeWhere((element) => element.containsValue(snapshot.data[i].name));
                                 } else {
+                                  tempMap.add({"name": snapshot.data[i].name, "username": snapshot.data[i].username});
                                   temp.add(snapshot.data[i].name);
                                   print(temp);
                                 }
@@ -605,9 +765,9 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
                   ),
                   CustomDenseButton(
                       onTap: () {
-                        if (temp.isNotEmpty) {
+                        if (tempMap.isNotEmpty) {
                           setState(() {
-                            techController.text = '${temp.length} teknisi ditugaskan';
+                            techController.text = '${tempMap.length} teknisi ditugaskan';
                           });
                         } else {
                           setState(() {
@@ -615,7 +775,7 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
                           });
                         }
                         Navigator.pop(context);
-                        print(temp.toSet().toList());
+                        print(tempMap.toList());
                       },
                       color: Colors.blue,
                       title: 'Simpan'),
@@ -637,13 +797,13 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
       builder: (context) {
         return StatefulBuilder(
           builder: (BuildContext context, void Function(void Function()) setModalState) {
-            return SafeArea(
-              child: Container(
-                color: Colors.white,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
+            return Container(
+              color: Colors.white,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SafeArea(
+                    child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: Row(
                         children: [
@@ -655,23 +815,26 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-                      child: CustomTextFieldSmall(
-                        hintText: 'Cari gudang',
-                        prefixIcon: Icon(Icons.search),
-                        onchange: (value) {
-                          setModalState(() {
-                            warehouseSearch = value;
-                          });
-                        },
-                      ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                    child: CustomTextFieldSmall(
+                      hintText: 'Cari gudang',
+                      prefixIcon: Icon(Icons.search),
+                      onchange: (value) {
+                        setModalState(() {
+                          warehouseSearch = value;
+                        });
+                      },
                     ),
-                    FutureBuilder(
-                      future: warehouseFuture,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return Expanded(
+                  ),
+                  FutureBuilder(
+                    future: warehouseFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Expanded(
+                          child: Padding(
+                            padding: MediaQuery.of(context).viewInsets,
                             child: ListView.builder(
                               padding: EdgeInsets.only(right: 20, left: 20),
                               shrinkWrap: true,
@@ -683,13 +846,35 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
                                     children: [
                                       ListTile(
                                         onTap: () {
-                                          warehouseController.text = snapshot.data[index].warehouseName;
                                           Navigator.pop(context);
+                                          if (!warehouseFilter
+                                              .map((e) => e.name)
+                                              .toList()
+                                              .contains(warehouse.warehouseName)) {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: Text('Perhatian'),
+                                                  content: dialogBox(),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () => Navigator.pop(context),
+                                                      child: Text('OK'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          } else {
+                                            warehouseId = warehouse.warehouseId.toInt();
+                                            warehouseController.text = warehouse.warehouseName;
+                                          }
                                         },
                                         contentPadding: EdgeInsets.zero,
-                                        title: Text(snapshot.data[index].warehouseName,
+                                        title: Text(warehouse.warehouseName,
                                             style: GoogleFonts.openSans(fontWeight: FontWeight.bold)),
-                                        subtitle: Text(snapshot.data[index].warehouseCode),
+                                        subtitle: Text(warehouse.warehouseCode),
                                       ),
                                       Divider(thickness: 1),
                                     ],
@@ -699,18 +884,52 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
                                 }
                               },
                             ),
-                          );
-                        }
-                        return CircularProgressIndicator();
-                      },
-                    ),
-                  ],
-                ),
+                          ),
+                        );
+                      }
+                      return Center(child: CircularProgressIndicator());
+                    },
+                  ),
+                ],
               ),
             );
           },
         );
       },
+    );
+  }
+
+  Widget dialogBox() {
+    return Container(
+      height: MediaQuery.of(context).size.height * .45,
+      width: MediaQuery.of(context).size.width * .80,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Barang ini hanya ada di gudang :'),
+          SizedBox(height: 20),
+          ListView.separated(
+            shrinkWrap: true,
+            itemCount: warehouseFilter.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                onTap: () {
+                  filteredWarehouseFinal = warehouseFilter.map((e) => e.name.toLowerCase()).toList();
+                  warehouseId = warehouseFilter[index].id;
+                  warehouseController.text = warehouseFilter[index].name;
+                  Get.back();
+                },
+                contentPadding: EdgeInsets.zero,
+                title: Text(warehouseFilter[index].name),
+                subtitle: Text('Stok : ${warehouseFilter[index].stock}'),
+              );
+            },
+            separatorBuilder: (BuildContext context, int index) {
+              return Divider(thickness: 1);
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -722,14 +941,14 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
       enableDrag: false,
       isDismissible: false,
       builder: (BuildContext context) {
-        return SafeArea(
-          child: Container(
-            color: Colors.white,
-            height: MediaQuery.of(context).size.height * .60,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
+        return Container(
+          color: Colors.white,
+          height: MediaQuery.of(context).size.height * .60,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SafeArea(
+                child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: Row(
                     children: [
@@ -739,38 +958,39 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
                     ],
                   ),
                 ),
-                FutureBuilder(
-                  future: driverFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Expanded(
-                        child: ListView.separated(
-                          padding: EdgeInsets.only(right: 20, left: 20),
-                          shrinkWrap: true,
-                          itemCount: snapshot.data.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return ListTile(
-                                onTap: () {
-                                  driverId = snapshot.data[index].id;
-                                  driverController.text = snapshot.data[index].name;
-                                  Navigator.pop(context);
-                                },
-                                contentPadding: EdgeInsets.zero,
-                                title: Text(snapshot.data[index].name, style: GoogleFonts.openSans())
-                                // subtitle: Text(snapshot.data[index].warehouseCode),
-                                );
-                          },
-                          separatorBuilder: (BuildContext context, int index) {
-                            return Divider(thickness: 1);
-                          },
-                        ),
-                      );
-                    }
-                    return CircularProgressIndicator();
-                  },
-                ),
-              ],
-            ),
+              ),
+              FutureBuilder(
+                future: driverFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Expanded(
+                      child: ListView.separated(
+                        padding: EdgeInsets.only(right: 20, left: 20),
+                        shrinkWrap: true,
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          UserResult driver = snapshot.data[index];
+                          return ListTile(
+                              onTap: () {
+                                driverId = driver.id;
+                                print(driverId);
+                                print(driver.name);
+                                driverController.text = driver.name;
+                                Navigator.pop(context);
+                              },
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(snapshot.data[index].name, style: GoogleFonts.openSans()));
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return Divider(thickness: 1);
+                        },
+                      ),
+                    );
+                  }
+                  return Center(child: CircularProgressIndicator());
+                },
+              ),
+            ],
           ),
         );
       },
@@ -785,14 +1005,14 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
       enableDrag: false,
       isDismissible: false,
       builder: (BuildContext context) {
-        return SafeArea(
-          child: Container(
-            color: Colors.white,
-            height: MediaQuery.of(context).size.height * .60,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
+        return Container(
+          color: Colors.white,
+          height: MediaQuery.of(context).size.height * .60,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SafeArea(
+                child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: Row(
                     children: [
@@ -802,39 +1022,36 @@ class _DemoAssignmentDetailState extends State<DemoAssignmentDetail> {
                     ],
                   ),
                 ),
-                FutureBuilder(
-                  future: transportFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Expanded(
-                        child: ListView.separated(
-                          padding: EdgeInsets.only(right: 20, left: 20),
-                          shrinkWrap: true,
-                          itemCount: snapshot.data.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return ListTile(
-                                onTap: () {
-                                  transportId = snapshot.data[index].id;
-                                  vehicleController.text = snapshot.data[index].name;
-                                  Navigator.pop(context);
-                                },
-                                contentPadding: EdgeInsets.zero,
-                                title: Text(snapshot.data[index].name,
-                                    style: GoogleFonts.openSans(fontWeight: FontWeight.bold))
-                                // subtitle: Text(snapshot.data[index].warehouseCode),
-                                );
-                          },
-                          separatorBuilder: (BuildContext context, int index) {
-                            return Divider(thickness: 1);
-                          },
-                        ),
-                      );
-                    }
-                    return CircularProgressIndicator();
-                  },
-                ),
-              ],
-            ),
+              ),
+              FutureBuilder(
+                future: transportFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Expanded(
+                      child: ListView.separated(
+                        padding: EdgeInsets.only(right: 20, left: 20),
+                        shrinkWrap: true,
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return ListTile(
+                              onTap: () {
+                                transportId = snapshot.data[index].id;
+                                vehicleController.text = snapshot.data[index].name;
+                                Navigator.pop(context);
+                              },
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(snapshot.data[index].name, style: GoogleFonts.openSans()));
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return Divider(thickness: 1);
+                        },
+                      ),
+                    );
+                  }
+                  return Center(child: CircularProgressIndicator());
+                },
+              ),
+            ],
           ),
         );
       },
